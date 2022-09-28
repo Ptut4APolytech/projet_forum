@@ -1,0 +1,42 @@
+/configuration:
+  get:
+    tags:
+      - "Configuration"
+    summary: "Configuration générale"
+    description: "Cette requête retourne des informations générales sur l'application"
+    operationId: "getConfiguration"
+    security: []
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Configuration trouvée"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Configuration"
+  put:
+    tags:
+      - "Configuration"
+    summary: "Modification configuration"
+    description: "Cette requête modifie la configuration générale de l'application"
+    operationId: "setConfiguration"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Données à modifier sur la configuration"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Configuration modifiée avec succès"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Configuration"
+

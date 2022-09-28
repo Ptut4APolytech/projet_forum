@@ -1,0 +1,215 @@
+/appointment:
+  get:
+    tags:
+      - "Appointment"
+    summary: "Liste des rendez-vous"
+    description: "Cette requête retourne la liste des rendez-vous du forum"
+    operationId: "getAppointments"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des rendez-vous"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+  post:
+    tags:
+      - "Appointment"
+    summary: "Création d'un rendez-vous"
+    description: "Cette requête crée un rendez-vous pour le forum"
+    operationId: "addAppointment"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Rendez-vous à créer"
+        schema:
+          type: "object"
+          required:
+            - "companyId"
+            - "studentId"
+            - "offerId"
+            - "slot"
+          properties:
+            companyId:
+              type: "string"
+              description: "Identifiant de l'entreprise"
+            studentId:
+              type: "string"
+              description: "Identifiant de l'étudiant"
+            offerId:
+              type: "string"
+              description: "Identifiant de l'offre"
+            slot:
+              type: "integer"
+              description: "Créneau de l'offre"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Rendez-vous créé"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+/appointment/{appointmentId}:
+  get:
+    tags:
+      - "Appointment"
+    summary: "Informations sur un rendez-vous"
+    description: "Cette requête retourne un rendez-vous du forum selon son identifiant"
+    operationId: "getAppointment"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "appointmentId"
+        type: "string"
+        description: "Identifiant du rendez-vous"
+        required: true
+    responses:
+      "200":
+        description: "Informations sur le rendez-vous"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+  delete:
+    tags:
+      - "Appointment"
+    summary: "Suppression d'un rendez-vous"
+    description: "Cette requête supprime le rendez-vous lié à l'identifiant donné"
+    operationId: "delAppointment"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "appointmentId"
+        type: "string"
+        description: "Identifiant du rendez-vous"
+        required: true
+    responses:
+      "200":
+        description: "Rendez-vous supprimé avec succès"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+  put:
+    tags:
+      - "Appointment"
+    summary: "Modification d'un rendez-vous"
+    description: "Cette requête modifie le rendez-vous lié à l'identifiant donné"
+    operationId: "setAppointment"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "appointmentId"
+        type: "string"
+        description: "Identifiant du rendez-vous"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Données à modifier"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Rendez-vous modifié avec succès"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+/planning/generate:
+  get:
+    tags:
+      - "Appointment"
+    summary: "Création de tous les rendez-vous"
+    description: "Cette requête crée les rendez-vous et retourne la liste des rendez-vous du forum"
+    operationId: "createPlanning"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des rendez-vous"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+/appointment/studentAppointments/{studentId}:
+  get:
+    tags:
+      - "Appointment"
+    summary: "Liste des rendez-vous d'un étudiant"
+    description: "Cette requête retourne une liste de rendez-vous du forum selon l'identifiant de l'étudiant"
+    operationId: "getStudentAppointments"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "studentId"
+        type: "string"
+        description: "Identifiant de l'étudiant"
+        required: true
+    responses:
+      "200":
+        description: "Liste des rendez-vous de l'étudiant"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"
+/appointment/companyAppointments/{companyId}:
+  get:
+    tags:
+      - "Appointment"
+    summary: "Liste des rendez-vous d'une entreprise"
+    description: "Cette requête retourne une liste de rendez-vous du forum selon l'identifiant de l'entreprise"
+    operationId: "getCompanyAppointments"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "companyId"
+        type: "string"
+        description: "Identifiant de l'entreprise"
+        required: true
+    responses:
+      "200":
+        description: "Liste des rendez-vous de l'entreprise"
+        schema:
+          $ref: "#/definitions/Appointment"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Appointment"

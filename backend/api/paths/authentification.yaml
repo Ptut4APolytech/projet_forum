@@ -1,0 +1,36 @@
+/login:
+  post:
+    tags:
+      - "Login"
+    summary: "Connexion à l'application"
+    description: "Cette requête permet la connexion à l'application"
+    operationId: "login"
+    security: []
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Identifiants de connexion"
+        schema:
+          type: "object"
+          required:
+            - "email"
+            - "password"
+          properties:
+            email:
+              type: "string"
+              description: "Email utilisateur"
+            password:
+              type: "string"
+              description: "Mot de passe"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Connexion réussie"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Login"

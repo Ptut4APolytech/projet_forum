@@ -1,0 +1,17 @@
+/hello:
+  get:
+    tags:
+    - "Api"
+    summary: "Requête de statut de l'API"
+    description: "Vérifie le bon fonctionnement de l'API"
+    operationId: "hello"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "API fonctionnelle"
+        schema:
+          $ref: "#/definitions/ApiResponse"
+      "400":
+        description: "Invalid status value"
+    x-swagger-router-controller: "Test"

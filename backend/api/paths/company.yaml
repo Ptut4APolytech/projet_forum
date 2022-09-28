@@ -1,0 +1,136 @@
+/company:
+  get:
+    tags:
+      - "Company"
+    summary: "Liste des entreprises"
+    description: "Cette requête retourne la liste des entreprises"
+    operationId: "getCompanies"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste retournée avec succès"
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Company"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Company"
+  post:
+    tags:
+      - "Company"
+    summary: "Création d'une entreprise"
+    description: "Cette requête crée une entreprise"
+    operationId: "addCompany"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "L'entreprise à créer"
+        schema:
+          type: "object"
+          required:
+            - "name"
+          properties:
+            name:
+              type: "string"
+              description: "Nom de l'entreprise"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Entreprise créée avec succès"
+        schema:
+          $ref: "#/definitions/Company"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Company"
+/company/{companyId}:
+  get:
+    tags:
+      - "Company"
+    summary: "Informations entreprise"
+    description: "Cette requête retourne une entreprise selon son identifiant"
+    operationId: "getCompany"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "companyId"
+        type: "string"
+        description: "Identifiant de l'entreprise"
+        required: true
+    responses:
+      "200":
+        description: "Informations sur une entreprise"
+        schema:
+          $ref: "#/definitions/Company"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Company"
+  delete:
+    tags:
+      - "Company"
+    summary: "Suppression entreprise"
+    description: "Cette requête supprime l'entreprise selon l'identifiant donné"
+    operationId: "delCompany"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "companyId"
+        type: "string"
+        description: "Identifiant de l'entreprise"
+        required: true
+    responses:
+      "200":
+        description: "Entreprise supprimée avec succès"
+        schema:
+          $ref: "#/definitions/Company"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Company"
+  put:
+    tags:
+      - "Company"
+    summary: "Modification entreprise"
+    description: "Cette requête modifie l'entreprise selon l'identifiant donné"
+    operationId: "setCompany"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "companyId"
+        type: "string"
+        description: "Identifiant de l'entreprise"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Données à modifier sur l'entreprise"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Entreprise modifiée avec succès"
+        schema:
+          $ref: "#/definitions/Company"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Company"
