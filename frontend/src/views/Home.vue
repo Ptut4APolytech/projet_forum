@@ -15,7 +15,7 @@
         </div>
 
         <div class="subtitle-1 text-md-h4 text-lg-h3">
-          <v-progress-circular v-if="!date" indeterminate></v-progress-circular>
+          <p v-if="!date">La date sera bientôt definie...</p>
           <template v-else>{{ date }}</template>
         </div>
 
