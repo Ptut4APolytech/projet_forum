@@ -93,5 +93,9 @@ export default {
   color: white;
 }
 
+.accent {
+	padding: 56px 0px 0px !important;
+}
+
 </style>
 
