@@ -75,9 +75,7 @@ exports.addUser = async function (user) {
         }
         else {
 
-			// TODO: env = prod 
-            //let clearPassword = tools.generatePassword(11);
-			let clearPassword = "azerty123";
+            let clearPassword = (process.env.ENVIRONMENT === "dev") ? "azerty123" : tools.generatePassword(11);
 
             let userItem = {
                 email: user.email,

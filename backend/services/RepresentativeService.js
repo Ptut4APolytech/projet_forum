@@ -84,10 +84,7 @@ exports.addRepresentative = async function (representative) {
         }
         else {
 
-            let clearPassword = tools.generatePassword(11);
-
-            // A SUPPRIMER EN PROD: mot de passe unique pour tout le monde en dev
-            // clearPassword = 'password';
+            let clearPassword = (process.env.ENVIRONMENT === "dev") ? "azerty123" : tools.generatePassword(11);
 
             // Création utilisateur
             let newUser = {
