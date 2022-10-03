@@ -20,17 +20,18 @@ const c_mailingConfig = JSON.parse(fs.readFileSync("./utils/mailing/mailing-conf
 async function sendMail(p_subject, p_recipients, p_email, p_attachments = []) {
     let { user: v_userConfig, password: v_passwordConfig, senderAlias: v_senderAliasConfig } = c_mailingConfig;
 
-    let v_transporter = nodemailer.createTransport({
-        // host: 'smtp.gmail.com',
+    let v_transporter = (process.env.ENVIRONMENT === "dev") 
+	? nodemailer.createTransport({
+        service: 'gmail',
+    	auth: {
+        	user: v_userConfig,
+        	pass: v_passwordConfig
+        }
+    })
+	: nodemailer.createTransport({
         host: 'smtpbv.univ-lyon1.fr',
         port: 25,
         secure: false
-        // port: 465,
-        // secure: true,
-        // auth: {
-        //     user: v_userConfig,
-        //     pass: v_passwordConfig
-        // }
     });
 
     let v_mailOptions = {
