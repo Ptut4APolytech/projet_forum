@@ -1,9 +1,8 @@
 <template>
   <v-container fluid>
     <h1 class="primary--text text-h4">
-      Planning du
-      <v-progress-circular v-if="!date" indeterminate></v-progress-circular>
-      <template v-else>{{ date }}</template>
+      <p v-if="!date">La date sera bientôt définie...</p>
+      <template v-else>Planning du {{ date }}</template>
     </h1>
     <v-card-title v-if="!company.isValidated">
       Vous n'avez pas accès au planning, le statut de votre entreprise n'est pas
@@ -12,8 +11,9 @@
     <v-card-title v-else-if="showPlanning === false">
       Vous n'avez pas encore accès au planning, son affichage est caché par Polytech Lyon
     </v-card-title>
+	<v-row v-else-if="!date"></v-row>
     <v-row
-      v-else-if="!loadingDatas"
+      v-else-if="!loadingDatas && date"
       style="flex-wrap: nowrap; max-width: 100vw; margin-left: -56px"
       class="pa-0 justify-center"
     >
