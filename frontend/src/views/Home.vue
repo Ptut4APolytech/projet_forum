@@ -15,7 +15,7 @@
         </div>
 
         <div class="subtitle-1 text-md-h4 text-lg-h3">
-          <p v-if="!date">La date sera bientôt definie...</p>
+          <p v-if="!date">La date sera bientôt définie...</p>
           <template v-else>{{ date }}</template>
         </div>
 
