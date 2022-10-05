@@ -4,7 +4,7 @@ import store from "../store/index";
 
 // Instance axios globale
 const instance = axios.create({
-    baseURL: (process.env.ENVIRONMENT === "dev") ? 'http://localhost:8080/v1/' : 'https://forum-polytech-appr-bkd.univ-lyon1.fr/v1/',
+    baseURL: (process.env.VUE_APP_ENVIRONMENT === "dev") ? 'http://localhost:8080/v1/' : 'https://forum-polytech-appr-bkd.univ-lyon1.fr/v1/',
     withCredentials: true,
 });
 
