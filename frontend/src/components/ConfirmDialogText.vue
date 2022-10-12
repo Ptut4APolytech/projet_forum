@@ -19,7 +19,7 @@
 
             <v-divider />
 
-            <v-col cols="4">
+            <v-col v-if="isDatePicker" cols="4">
                 <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :return-value.sync="datePicker"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -86,7 +86,8 @@ export default {
         confirm: "",
         shakeSumbit: false,
         datePicker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 10),
-        disabledButton: true
+        disabledButton: true,
+		menu: false
     }),
 
     watch: {

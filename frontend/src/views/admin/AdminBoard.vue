@@ -2,7 +2,11 @@
     <v-container fluid>
         <v-row class="mb-4">
             <v-col class="d-flex align-center justify-end">
-                <v-btn color="primary mr-2" class="white--text" @click="openDateTimePicker()">
+                <v-btn color="primary mr-2" class="white--text" @click="openDateTimePicker()"
+                    :disabled="loadDatePickerButton">
+                    <v-progress-circular v-if="loadDatePickerButton" size="25" class="mr-2" indeterminate>
+                    </v-progress-circular>
+                    <v-icon v-else class="mr-2">mdi-calendar-plus-outline</v-icon>
                     <span v-if="date">
                         Modifier la date du forum
                     </span>
@@ -129,8 +133,11 @@
             </v-col>
         </v-row>
 
-        <ConfirmDialogText v-if="dialogDateTimePicker" color="warning" text="Mettre à jour la date du forum" subText="Cette action a de fortes conséquences. Une fois validée, la date du forum sera mis à jour pour l'ensemble des représentants et des étudiants."
-            confirmText="VALIDE DATE" @cancel="dialogDateTimePicker = false" @confirm="publishDate()" :isDatePicker="true" />
+        <ConfirmDialogText v-if="dialogDatePicker" ref="refDialogDatePicker" color="warning"
+            text="Mettre à jour la date du forum"
+            subText="Cette action a de fortes conséquences. Une fois validée, la date du forum sera mis à jour pour l'ensemble des représentants et des étudiants."
+            confirmText="VALIDE DATE" @cancel="dialogDatePicker = false" @confirm="publishDate()"
+            :isDatePicker="true" />
 
         <ConfirmDialogText v-if="dialogSurvey" color="warning" text="Envoyer le questionnaire de satisfaction" subText="Cette action a de fortes conséquences. Une fois validée, l'enquête de satisfaction 
       sera automatiquement envoyée à l'ensemble des représentants et des étudiants."
@@ -168,9 +175,9 @@ export default {
             },
             studentsWithAppointment: 0,
             dialogSurvey: false,
-            dialogDateTimePicker: false,
+            dialogDatePicker: false,
             date: null,
-            datePicker: new Date(),
+            loadDatePickerButton: false,
             loadSurveyButton: false,
         };
     },
@@ -221,17 +228,29 @@ export default {
         },
 
         openDateTimePicker() {
-            this.dialogDateTimePicker = true;
+            this.dialogDatePicker = true;
         },
 
         publishDate() {
-            this.$store.dispatch('setForumDate', { forumDate: this.datePicker }).then(() => {
-                this.$store.commit("SET_POPUP", {
-                    text: `Date mis à jour !`,
-                    color: "success",
-                    visible: true,
+            this.loadDatePickerButton = true;
+            this.$store.dispatch('setForumDate', { forumDate: this.$refs.refDialogDatePicker.$data.datePicker })
+                .then(() => {
+                    this.$store.commit("SET_POPUP", {
+                        text: `Date mis à jour !`,
+                        color: "success",
+                        visible: true,
+                    });
+                })
+                .catch((err) => {
+                    this.$store.commit("SET_POPUP", {
+                        text: `Echec de modification de la date du forum : ${err}`,
+                        color: "error",
+                        visible: true,
+                    });
+                })
+                .finally(() => {
+                    this.loadDatePickerButton = false;
                 });
-            })
         },
 
         sendSurvey() {
