@@ -128,7 +128,7 @@ export default {
 
         const forumDate = new Date(newDate);
         // Récupération du jour
-        const day = forumDate.getDay();
+        const day = forumDate.toLocaleString("default", { day: "numeric" });
         // Récupération du mois avec la première lettre en majuscule
         let month = forumDate.toLocaleString("default", { month: "long" });
         month = month.charAt(0).toUpperCase() + month.slice(1);

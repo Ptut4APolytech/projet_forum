@@ -360,8 +360,8 @@ export async function getForumDate({ commit }) {
 }
 
 export async function setForumDate({ commit }, data) {
-	await instance.put('/configuration', data).then(() => {
-		commit('SET_FORUM_DATE', data)
+	await instance.put('/configuration', data).then((res) => {
+		commit('SET_FORUM_DATE', res.data.forumDate)
 	}).catch((err) => {
 		commit("SET_POPUP", {
 			text: `Erreur : ${err.response.data.message}`,
