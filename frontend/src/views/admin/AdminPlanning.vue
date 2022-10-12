@@ -137,10 +137,10 @@ import path from "path";
           </div>
         </v-row>
         <v-row
-          class="ma-0 justify-space-between"
-          style="position: sticky; left: 0px"
+          class="md-mb-0 mb-10 ma-0 justify-space-between"
+          style=" position: sticky; left: 0px"
         >
-          <div>
+          <div class="mt-5">
             <v-btn
               color="primary"
               large
@@ -183,7 +183,7 @@ import path from "path";
                 @confirm="publishPlanning"
             />
           </div>
-          <div>
+          <div class=" ml-5  mt-5">
             <v-btn
               color="error"
               large
