@@ -441,7 +441,6 @@ exports.createPlanning = async function () {
     // c win
     // si plus de student l'ont choisi, on prend les premiers étudiants qui ne l'ont pas choisi
   } catch (error) {
-    console.error(error)
     response = tools.respondWithCode(500, error);
   }
 

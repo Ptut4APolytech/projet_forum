@@ -214,7 +214,6 @@ exports.resetPassword = async function (email) {
         response = { success: true };
     }
     catch (error) {
-        console.log("bonjour");
         response = tools.respondWithCode(500, error);
     }
 

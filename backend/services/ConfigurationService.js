@@ -47,6 +47,9 @@ exports.setConfiguration = async function (configId, config) {
             if (config.forumDate) {
                 newDatas.forumDate = config.forumDate;
             }
+			if (config.forumHeure) {
+                newDatas.forumHeure = config.forumHeure;
+            }
             if (config.hasOwnProperty('showPlanning')) {
                 newDatas.showPlanning = config.showPlanning;
             }

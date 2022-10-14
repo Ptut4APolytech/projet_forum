@@ -7,11 +7,11 @@
                     <v-progress-circular v-if="loadDatePickerButton" size="25" class="mr-2" indeterminate>
                     </v-progress-circular>
                     <v-icon v-else class="mr-2">mdi-calendar-plus-outline</v-icon>
-                    <span v-if="date">
-                        Modifier la date du forum
+                    <span v-if="date && heure">
+                        Modifier la date et l'horaire du forum
                     </span>
                     <span v-else>
-                        Ajouter une date au forum
+                        Ajouter une date et un horaire au forum
                     </span>
                 </v-btn>
                 <v-btn color="primary mr-2" class="white--text" @click="openConfirmDialogText()"
@@ -133,11 +133,11 @@
             </v-col>
         </v-row>
 
-        <ConfirmDialogText v-if="dialogDatePicker" ref="refDialogDatePicker" color="warning"
+        <ConfirmDialogText v-if="dialogDateTimePicker" ref="refDialogDatePicker" color="warning"
             text="Mettre à jour la date du forum"
             subText="Cette action a de fortes conséquences. Une fois validée, la date du forum sera mis à jour pour l'ensemble des représentants et des étudiants."
-            confirmText="VALIDE DATE" @cancel="dialogDatePicker = false" @confirm="publishDate()"
-            :isDatePicker="true" />
+            confirmText="VALIDE DATE ET HORAIRE" @cancel="dialogDateTimePicker = false" @confirm="publishDateHeure()"
+            :isDateTimePicker="true" />
 
         <ConfirmDialogText v-if="dialogSurvey" color="warning" text="Envoyer le questionnaire de satisfaction" subText="Cette action a de fortes conséquences. Une fois validée, l'enquête de satisfaction 
       sera automatiquement envoyée à l'ensemble des représentants et des étudiants."
@@ -175,8 +175,9 @@ export default {
             },
             studentsWithAppointment: 0,
             dialogSurvey: false,
-            dialogDatePicker: false,
+            dialogDateTimePicker: false,
             date: null,
+			heure: null,
             loadDatePickerButton: false,
             loadSurveyButton: false,
         };
@@ -187,6 +188,8 @@ export default {
             students: "GET_STUDENTS",
             companies: "GET_COMPANIES",
             offers: "GET_OFFERS",
+			dateForum: "GET_FORUM_DATE",
+			heureForum: "GET_FORUM_HEURE",
         }),
         innerWidth() {
             return window.innerWidth;
@@ -228,29 +231,32 @@ export default {
         },
 
         openDateTimePicker() {
-            this.dialogDatePicker = true;
+            this.dialogDateTimePicker = true;
         },
 
-        publishDate() {
+        publishDateHeure() {
             this.loadDatePickerButton = true;
-            this.$store.dispatch('setForumDate', { forumDate: this.$refs.refDialogDatePicker.$data.datePicker })
-                .then(() => {
-                    this.$store.commit("SET_POPUP", {
-                        text: `Date mis à jour !`,
-                        color: "success",
-                        visible: true,
-                    });
-                })
-                .catch((err) => {
-                    this.$store.commit("SET_POPUP", {
-                        text: `Echec de modification de la date du forum : ${err}`,
-                        color: "error",
-                        visible: true,
-                    });
-                })
-                .finally(() => {
-                    this.loadDatePickerButton = false;
-                });
+			this.dialogDateTimePicker = false;
+            this.$store.dispatch('setForumDateHeure', { 
+				forumDate: this.$refs.refDialogDatePicker.$data.datePicker,
+				forumHeure: `${this.$refs.refDialogDatePicker.$data.startTimePicker} - ${this.$refs.refDialogDatePicker.$data.endTimePicker}`
+			}).then(() => {
+				this.$store.commit("SET_POPUP", {
+					text: `Date mis à jour !`,
+					color: "success",
+					visible: true,
+				});
+			})
+			.catch((err) => {
+				this.$store.commit("SET_POPUP", {
+					text: `Echec de modification de la date du forum : ${err}`,
+					color: "error",
+					visible: true,
+				});
+			})
+			.finally(() => {
+				this.loadDatePickerButton = false;
+			});
         },
 
         sendSurvey() {
@@ -278,6 +284,8 @@ export default {
     },
 
     async created() {
+		this.date = this.dateForum; 
+		this.heure = this.heureForum; 
         await this.$store.dispatch("getAllStudents");
         this.studentsData = {
             labels: ["Validés", "En attente", "Non validés"],

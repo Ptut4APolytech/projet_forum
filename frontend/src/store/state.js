@@ -13,6 +13,7 @@ export default function () {
     isAuthenticated: false,
     popup: {},
     forumDate: null,
+	forumHeure: null,
     showPlanning: false
   }
 }

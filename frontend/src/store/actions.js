@@ -347,29 +347,61 @@ export async function updatePasswordByToken({ }, data) {
 	await instance.post('/reset/' + data.token, data)
 }
 
-export async function getForumDate({ commit }) {
-	await instance.get('/configuration').then((res) => {
+export async function setForumDateHeure({ commit }, data) {
+	try {
+		const res = await instance.put('/configuration', data)
 		commit('SET_FORUM_DATE', res.data.forumDate)
-	}).catch((err) => {
+		commit('SET_FORUM_HEURE', res.data.forumHeure)
+	} catch (err) {
 		commit("SET_POPUP", {
 			text: `Erreur : ${err.response.data.message}`,
 			color: "error",
 			visible: true,
 		});
-	})
+	}
+	
 }
 
-export async function setForumDate({ commit }, data) {
-	await instance.put('/configuration', data).then((res) => {
+export async function getForumDateHeure({ commit }) {
+	try {
+		const res = await instance.get('/configuration')
 		commit('SET_FORUM_DATE', res.data.forumDate)
-	}).catch((err) => {
+		commit('SET_FORUM_HEURE', res.data.forumHeure)
+	} catch (err) {
 		commit("SET_POPUP", {
 			text: `Erreur : ${err.response.data.message}`,
 			color: "error",
 			visible: true,
 		});
-	})
+	}
 }
+
+export async function getForumDate({ commit }) {
+	try {
+		const res = await instance.get('/configuration')
+		commit('SET_FORUM_DATE', res.data.forumDate)
+	} catch (err) {
+		commit("SET_POPUP", {
+			text: `Erreur : ${err.response.data.message}`,
+			color: "error",
+			visible: true,
+		});
+	}
+}
+
+export async function getForumHeure({ commit }) {
+	try {
+		const res = await instance.get('/configuration')
+		commit('SET_FORUM_HEURE', res.data.forumHeure)
+	} catch (err) {
+		commit("SET_POPUP", {
+			text: `Erreur : ${err.response.data.message}`,
+			color: "error",
+			visible: true,
+		});
+	}
+}
+
 
 export async function getPlanningPublished({ commit }) {
 	await instance.get('/configuration').then((res) => {

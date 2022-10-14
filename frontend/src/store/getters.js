@@ -48,6 +48,10 @@ export function GET_FORUM_DATE(state) {
   return state.forumDate;
 }
 
+export function GET_FORUM_HEURE(state) {
+	return state.forumHeure;
+  }
+
 export function GET_PLANNING_PUBLISHED(state) {
   return state.showPlanning;
 }
