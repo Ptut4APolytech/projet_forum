@@ -242,7 +242,7 @@ export default {
 				forumHeure: `${this.$refs.refDialogDatePicker.$data.startTimePicker} - ${this.$refs.refDialogDatePicker.$data.endTimePicker}`
 			}).then(() => {
 				this.$store.commit("SET_POPUP", {
-					text: `Date mis à jour !`,
+					text: `Date et horaire mis à jour !`,
 					color: "success",
 					visible: true,
 				});
