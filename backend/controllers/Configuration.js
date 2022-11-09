@@ -35,7 +35,8 @@ module.exports.setConfiguration = async function (req, res, next) {
     let configuration = await Configuration.getConfiguration();
 
 	// Vérification de l'existence de la configuration
-	if (!configuration.showPlanning) {
+	console.log(configuration);
+	if (configuration !== undefined && configuration !== null && Object.keys(configuration).length === 0) {
 		configuration = await Configuration.addConfig();
 		
 	}
