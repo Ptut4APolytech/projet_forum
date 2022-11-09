@@ -11,7 +11,6 @@ const configurationModel = new ConfigurationModel();
  * @returns {Promise<Object>}
  */
 exports.getConfiguration = async function () {
-
     let response;
     try {
         response = await configurationModel.find();
@@ -48,6 +47,9 @@ exports.setConfiguration = async function (configId, config) {
             if (config.forumDate) {
                 newDatas.forumDate = config.forumDate;
             }
+			if (config.forumHeure) {
+                newDatas.forumHeure = config.forumHeure;
+            }
             if (config.hasOwnProperty('showPlanning')) {
                 newDatas.showPlanning = config.showPlanning;
             }
@@ -61,3 +63,24 @@ exports.setConfiguration = async function (configId, config) {
 
     return response;
 }
+
+/**
+ * Création d'une config
+ *
+ * @returns {Promise<Object>}
+ */
+ exports.addConfig = async function () {
+
+    let response;
+    try {
+		let configItem = {
+			showPlanning: false
+		};
+		response = await configurationModel.create(configItem);
+    }
+    catch (error) {
+        response = tools.respondWithCode(500, error);
+    }
+
+    return response;
+};

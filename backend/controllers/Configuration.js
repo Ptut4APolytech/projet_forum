@@ -32,7 +32,13 @@ module.exports.setConfiguration = async function (req, res, next) {
     // Modification autorisée pour les admins uniquement
     if (!await roleUtil.canExecuteRequest(res, req.data, ['admin'])) { return; }
 
-    const configuration = await Configuration.getConfiguration();
+    let configuration = await Configuration.getConfiguration();
+
+	// Vérification de l'existence de la configuration
+	if (!configuration.showPlanning) {
+		configuration = await Configuration.addConfig();
+		
+	}
 
     const configurationId = configuration.id;
     const body = req.body;

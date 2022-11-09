@@ -51,6 +51,10 @@ export function SET_FORUM_DATE (state, data) {
   state.forumDate = data
 }
 
+export function SET_FORUM_HEURE (state, data) {
+	state.forumHeure = data
+} 
+
 export function SET_PLANNING_PUBLISHED (state, data) {
   state.showPlanning = data
 }
