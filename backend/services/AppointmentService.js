@@ -1,5 +1,6 @@
 'use strict';
 
+const { NB_SLOTS_BY_DAY, SLOTS } = require('../utils/constants');
 const tools = require('../utils/tools');
 const AppointmentModel = require('../models/AppointmentModel');
 const CompanyModel = require('../models/CompanyModel');
@@ -237,8 +238,6 @@ exports.setAppointment = async function (appointmentId, appointment) {
 
 
 exports.createPlanning = async function () {
-	const NB_SLOTS_BY_DAY = 8;
-	const SLOTS = Array.from(Array(NB_SLOTS_BY_DAY).keys());
 	let response;
 	try {
 		await appointmentModel.deleteAll(); // reset appointments
@@ -247,8 +246,6 @@ exports.createPlanning = async function () {
 		const STUDENTS = await studentModel.findAll();
 		const COMPANIES = await companyModel.findAll();
 		const OFFERS = await offerModel.findAll();
-		
-		let allAppointments = [];
 		
 		// Get validated
 		const students_validated = STUDENTS.filter((stu) => stu.status === 'validated');
@@ -260,198 +257,18 @@ exports.createPlanning = async function () {
 		companies_valitated.map(com => ({...com.appointments = []}));
 		offers_validated.map(off => ({...off.appointments = []}));
 
-		// Shuffle
-		const companies_shuffled = shuffle(companies_valitated);
-		const offers_shuffled = shuffle(offers_validated);
+		// Init vars
+		let allAppointments = [];
+		
+		// 1st loop : compagny AND student wants to meet
+		allAppointments = allAppointments.concat(putAppointment(students_validated, companies_valitated, offers_validated, true));
 
-		for (const company of companies_shuffled) { // loop company
-			if (company.appointments.length < NB_SLOTS_BY_DAY) { // get if company not full
-				const companyOffers = offers_shuffled.filter((o) => o.companyId === company.id);
-				for (const offer of companyOffers) {
-					for (const studentId of offer.orderedStudents) { // loop ordered students
-						const student = students_validated.find(s => s.id === studentId);
-						if (student) {
-							if (student.orderedOffers.includes(offer.id)) {
-								const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
-								if (common_slot) {
+		// 2nd loop : only compagny wants to meet (if there is still some available slots)
+		allAppointments = allAppointments.concat(putAppointment(students_validated, companies_valitated, offers_validated, true));
 
-									// CREATE APPOINTMENT
-									companyOffers.forEach((currO) => {
-										currO.orderedStudents.splice(currO.orderedStudents.indexOf(student.id), 1);
-									});
-									student.orderedOffers.splice(student.orderedOffers.indexOf(currentOffer.id), 1);
-									let appointment = {
-										studentId: student.id,
-										offerId: currentOffer.id,
-										slot: slotAvailable,
-										companyId: companyToHandle.id
-									};
-									student.appointments[slotAvailable] = appointment;
-									companyToHandle.appointments[slotAvailable] = appointment;
-									currentOffer.appointments[slotAvailable] = appointment;
-									allAppointments.push(appointment);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		let i = 0;
-		let flag = false;
-		// first loop both wants to meet
-		while (!flag) {
-			if (companiesToHandle.length === 0) {
-				flag = true;
-				continue;
-			}
-			let companyToHandle = companiesToHandle[i % companiesToHandle.length];
-			if (companyToHandle.appointments.length < NBSLOTS) {
-				let currentOffers = offersToHandle.filter((o) => o.companyId === companyToHandle.id);
-				for (let currentOffer of currentOffers) {
-					let studentId = currentOffer.orderedStudents.find((stuId) => {
-						let student = students.find(s => s.id === stuId);
-						if (student) {
-							if (student.orderedOffers.includes(currentOffer.id)) {
-								let slotAvailable = slots.find((index) => {
-									return !companyToHandle.appointments[index] && !student.appointments[index];
-								});
-								if (slotAvailable != null) {
-									// CREATE APPOINTMENT
-									currentOffers.forEach((currO) => {
-										currO.orderedStudents.splice(currO.orderedStudents.indexOf(student.id), 1);
-									});
-									student.orderedOffers.splice(student.orderedOffers.indexOf(currentOffer.id), 1);
-									let appointment = {
-										studentId: student.id,
-										offerId: currentOffer.id,
-										slot: slotAvailable,
-										companyId: companyToHandle.id
-									};
-									student.appointments[slotAvailable] = appointment;
-									companyToHandle.appointments[slotAvailable] = appointment;
-									currentOffer.appointments[slotAvailable] = appointment;
-									allAppointments.push(appointment);
-									return true;
-								}
-							}
-						}
-						return false;
-					});
-					if (!studentId) {
-						offersToHandle.splice(offersToHandle.indexOf(currentOffer), 1);
-					}
-				}
-				if (currentOffers.length === 0) {
-					companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-				}
-			} else {
-				companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-			}
-			i++;
-		}
-		// second loop only the company wants to meet
-		companiesToHandle = shuffle(companies.filter((c) => c.appointments.length < NBSLOTS));
-
-		offersToHandle = shuffle(offers.filter((o) => o.appointments.length < NBSLOTS));
-		i = 0;
-		flag = false;
-		while (!flag) {
-			if (companiesToHandle.length === 0) {
-				flag = true;
-				continue;
-			}
-			let companyToHandle = companiesToHandle[i % companiesToHandle.length];
-			if (companyToHandle.appointments.length < NBSLOTS) {
-				let currentOffers = offersToHandle.filter((o) => o.companyId === companyToHandle.id);
-				for (let currentOffer of currentOffers) {
-					let studentId = currentOffer.orderedStudents.find((stuId) => {
-						let student = students.find(s => s.id === stuId);
-						if (student) {
-							// if (student.orderedOffers.includes(currentOffer.id)) {
-							let slotAvailable = slots.find((index) => {
-								return !companyToHandle.appointments[index] && !student.appointments[index]
-							});
-							if (slotAvailable != null) {
-								// CREATE APPOINTMENT
-								currentOffers.forEach((currO) => {
-									currO.orderedStudents.splice(currO.orderedStudents.indexOf(student.id), 1);
-								});
-								student.orderedOffers.splice(student.orderedOffers.indexOf(currentOffer.id), 1);
-								let appointment = {
-									studentId: student.id,
-									offerId: currentOffer.id,
-									slot: slotAvailable,
-									companyId: companyToHandle.id
-								};
-								student.appointments[slotAvailable] = appointment;
-								companyToHandle.appointments[slotAvailable] = appointment;
-								currentOffer.appointments[slotAvailable] = appointment;
-								allAppointments.push(appointment);
-								return true;
-							}
-							// }
-						}
-						return false;
-					});
-					if (!studentId) {
-						offersToHandle.splice(offersToHandle.indexOf(currentOffer), 1);
-					}
-				}
-				if (currentOffers.length === 0) {
-					companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-				}
-			} else {
-				companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-			}
-			i++;
-		}
 		// last loop only the student wants to meet
-		let studentsToHandle = shuffle(students.filter((s) => s.appointments.length < NBSLOTS));
-
-		i = 0;
-		flag = false;
-		while (!flag) {
-			if (studentsToHandle.length === 0) {
-				flag = true;
-				continue;
-			}
-			let studentToHandle = studentsToHandle[i % studentsToHandle.length];
-			if (studentToHandle.appointments.length < NBSLOTS) {
-				let offerId = studentToHandle.orderedOffers.find((offId) => {
-					let offer = offers.find(o => o.id === offId);
-					if (offer) {
-						let company = companies.find(c => c.id === offer.companyId);
-						let slotAvailable = slots.find((index) => {
-							return !studentToHandle.appointments[index] && !company.appointments[index] && !company.appointments.find((a) => a && a.studentId === studentToHandle.id);
-						});
-						if (slotAvailable != null) {
-							// CREATE APPOINTMENT
-							studentToHandle.orderedOffers.splice(studentToHandle.orderedOffers.indexOf(offer.id), 1);
-							let appointment = {
-								studentId: studentToHandle.id,
-								offerId: offer.id,
-								slot: slotAvailable,
-								companyId: company.id
-							};
-							studentToHandle.appointments[slotAvailable] = appointment;
-							company.appointments[slotAvailable] = appointment;
-							offer.appointments[slotAvailable] = appointment;
-							allAppointments.push(appointment);
-							return true;
-						}
-					}
-					return false;
-				});
-				if (!offerId) {
-					studentsToHandle.splice(studentsToHandle.indexOf(studentToHandle), 1);
-				}
-			} else {
-				studentsToHandle.splice(studentsToHandle.indexOf(studentToHandle), 1);
-			}
-			i++;
-		}
+		allAppointments = allAppointments.concat(putAppointment(students_validated, companies_valitated, offers_validated, false));
+		
 		for (let appo of allAppointments) {
 			await appointmentModel.create(appo);
 		}
@@ -480,4 +297,92 @@ function shuffle(a) {
 		a[j] = x;
 	}
 	return a;
+}
+
+/**
+ * Shuffles array in place.
+ * @param {Array} students_validated students already validated.
+ * @param {Array} companies_valitated companies already validated.
+ * @param {Array} offers_validated offers already validated.
+ * @param {Boolean} loopingOnCompany flag.
+ */
+const putAppointment = (students_validated, companies_valitated, offers_validated, loopingOnCompany) => {
+	// Init vars
+	let allAppointments = [];
+
+	// Shuffle
+	let companies_shuffled = shuffle(companies_valitated.filter((com) => com.appointments.length < NB_SLOTS_BY_DAY));
+	let offers_shuffled = shuffle(offers_validated.filter((off) => off.appointments.length < NB_SLOTS_BY_DAY));
+	let students_shuffled = shuffle(students_validated.filter((stu) => stu.appointments.length < NB_SLOTS_BY_DAY));
+
+	if (loopingOnCompany) {
+		// Loop on companies
+		for (const company of companies_shuffled) { // loop company
+			if (company.appointments.length < NB_SLOTS_BY_DAY) { // get if company not full
+				const companyOffers = offers_shuffled.filter((o) => o.companyId === company.id);
+				for (const offer of companyOffers) { // loop on company offers
+					for (const studentId of offer.orderedStudents) { // loop ordered students
+						const student = students_validated.find(s => s.id === studentId);
+						if (student) {
+							if (student.orderedOffers.includes(offer.id)) {
+								const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
+								if (common_slot !== null && common_slot !== undefined) {
+									const appointment = createAppointment(company, student, companyOffers, offer, common_slot);
+									allAppointments.push(appointment);
+								}
+							}
+						} else {
+							offers_shuffled.splice(offers_shuffled.indexOf(offer), 1);
+						}
+					}
+				}
+				if (companyOffers.length === 0) {
+					companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
+				}
+			} else {
+				companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
+			}
+		}
+	} else { // Loop on students
+		for (const student of students_shuffled) { // loop student
+			if (student.appointments.length < NB_SLOTS_BY_DAY) { // get if student not full
+				const studentOffers = offers_shuffled.filter((o) => o.orderedStudents.includes(student.id));
+				for (const offer of studentOffers) { // loop on student offers
+					const company = companies_valitated.find(c => c.id === offer.companyId);
+					if (company) { // check useless but still
+						if (company.appointments.length < NB_SLOTS_BY_DAY) {
+							const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
+							if (common_slot !== null && common_slot !== undefined) {
+								const appointment = createAppointment(company, student, studentOffers, offer, common_slot);
+								allAppointments.push(appointment);
+							}
+						}
+					}				}
+				if (studentOffers.length === 0) {
+					students_shuffled.splice(students_shuffled.indexOf(student), 1);
+				}
+			} else {
+				students_shuffled.splice(students_shuffled.indexOf(student), 1);
+			}
+		}
+	}
+
+	return allAppointments;
+}
+
+const createAppointment = (company, student, companyOffers, offer, slot) => {
+	companyOffers.forEach((offer) => {
+		offer.orderedStudents.splice(offer.orderedStudents.indexOf(student.id), 1);
+	});
+	student.orderedOffers.splice(student.orderedOffers.indexOf(offer.id), 1);
+	const appointment = {
+		studentId: student.id,
+		offerId: offer.id,
+		slot: slot,
+		companyId: company.id
+	};
+	student.appointments[slot] = appointment;
+	company.appointments[slot] = appointment;
+	offer.appointments[slot] = appointment;
+	return appointment;
 }
