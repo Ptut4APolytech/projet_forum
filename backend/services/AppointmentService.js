@@ -300,7 +300,7 @@ function shuffle(a) {
 }
 
 /**
- * Shuffles array in place.
+ * Put Appointments.
  * @param {Array} students_validated students already validated.
  * @param {Array} companies_valitated companies already validated.
  * @param {Array} offers_validated offers already validated.
@@ -315,61 +315,106 @@ const putAppointment = (students_validated, companies_valitated, offers_validate
 	let offers_shuffled = shuffle(offers_validated.filter((off) => off.appointments.length < NB_SLOTS_BY_DAY));
 	let students_shuffled = shuffle(students_validated.filter((stu) => stu.appointments.length < NB_SLOTS_BY_DAY));
 
+
 	if (loopingOnCompany) {
-		// Loop on companies
-		for (const company of companies_shuffled) { // loop company
-			if (company.appointments.length < NB_SLOTS_BY_DAY) { // get if company not full
-				const companyOffers = offers_shuffled.filter((o) => o.companyId === company.id);
-				for (const offer of companyOffers) { // loop on company offers
-					for (const studentId of offer.orderedStudents) { // loop ordered students
-						const student = students_validated.find(s => s.id === studentId);
-						if (student) {
-							if (student.orderedOffers.includes(offer.id)) {
-								const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
-								if (common_slot !== null && common_slot !== undefined) {
-									const appointment = createAppointment(company, student, companyOffers, offer, common_slot);
-									allAppointments.push(appointment);
-								}
-							}
-						} else {
-							offers_shuffled.splice(offers_shuffled.indexOf(offer), 1);
-						}
-					}
-				}
-				if (companyOffers.length === 0) {
-					companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
-				}
-			} else {
-				companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
-			}
-		}
+		const appointments = companyPriority(companies_shuffled, students_shuffled, offers_shuffled);
+		allAppointments = allAppointments.concat(appointments);
 	} else { // Loop on students
-		for (const student of students_shuffled) { // loop student
-			if (student.appointments.length < NB_SLOTS_BY_DAY) { // get if student not full
-				const studentOffers = offers_shuffled.filter((o) => o.orderedStudents.includes(student.id));
-				for (const offer of studentOffers) { // loop on student offers
-					const company = companies_valitated.find(c => c.id === offer.companyId);
-					if (company) { // check useless but still
-						if (company.appointments.length < NB_SLOTS_BY_DAY) {
-							const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
-							if (common_slot !== null && common_slot !== undefined) {
-								const appointment = createAppointment(company, student, studentOffers, offer, common_slot);
-								allAppointments.push(appointment);
-							}
-						}
-					}				}
-				if (studentOffers.length === 0) {
-					students_shuffled.splice(students_shuffled.indexOf(student), 1);
-				}
-			} else {
-				students_shuffled.splice(students_shuffled.indexOf(student), 1);
-			}
-		}
+		const appointments = studentPriority(companies_valitated, students_shuffled, offers_shuffled);
+		allAppointments = allAppointments.concat(appointments);
 	}
 
 	return allAppointments;
 }
 
+/**
+ * Get all appointments to add with company priority.
+ * @param {Array} companies_shuffled companies shuffled.
+ * @param {Array} students_validated students already validated.
+ * @param {Array} offers_shuffled offers shuffled.
+ */
+const companyPriority = (companies_shuffled, students_validated, offers_shuffled) => {
+	let appointmentToAdd = []
+	// Loop on companies
+	for (const company of companies_shuffled) { // loop company
+		if (company.appointments.length < NB_SLOTS_BY_DAY) { // get if company not full
+			const companyOffers = offers_shuffled.filter((o) => o.companyId === company.id);
+			for (const offer of companyOffers) { // loop on company offers
+				for (const studentId of offer.orderedStudents) { // loop ordered students
+					const student = students_validated.find(s => s.id === studentId);
+					if (student) {
+						if (student.orderedOffers.includes(offer.id)) {
+							const appointment = check_slot(company, student, companyOffers, offer)
+							if (appointment !== null) appointmentToAdd.push(appointment);
+						}
+					} else {
+						offers_shuffled.splice(offers_shuffled.indexOf(offer), 1);
+					}
+				}
+			}
+			if (companyOffers.length === 0) {
+				companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
+			}
+		} else {
+			companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
+		}
+	}
+	return appointmentToAdd;
+}
+
+/**
+ * Get all appointments to add with student priority.
+ * @param {Array} companies_valitated companies already validated.
+ * @param {Array} students_shuffled students shuffled.
+ * @param {Array} offers_shuffled offers shuffled.
+ */
+const studentPriority = (companies_valitated, students_shuffled, offers_shuffled) => {
+	let appointmentToAdd = []
+	for (const student of students_shuffled) { // loop student
+		if (student.appointments.length < NB_SLOTS_BY_DAY) { // get if student not full
+			const studentOffers = offers_shuffled.filter((o) => o.orderedStudents.includes(student.id));
+			for (const offer of studentOffers) { // loop on student offers
+				const company = companies_valitated.find(c => c.id === offer.companyId);
+				if (company) { // check useless but still
+					if (company.appointments.length < NB_SLOTS_BY_DAY) {
+						const appointment = check_slot(company, student, studentOffers, offer)
+						if (appointment !== null) appointmentToAdd.push(appointment);
+					}
+				}				}
+			if (studentOffers.length === 0) {
+				students_shuffled.splice(students_shuffled.indexOf(student), 1);
+			}
+		} else {
+			students_shuffled.splice(students_shuffled.indexOf(student), 1);
+		}
+	}
+	return appointmentToAdd;
+}
+
+/**
+ * Get if we can put appointment.
+ * @param {Object} company a company.
+ * @param {Object} student a student.
+ * @param {Array} companyOffers offers of a company.
+ * @param {Object} offer an offer.
+ */
+const check_slot = (company, student, companyOffers, offer) => {
+	const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
+	if (common_slot !== null && common_slot !== undefined) {
+		const appointment = createAppointment(company, student, companyOffers, offer, common_slot);
+		return appointment
+	}
+	return null
+}
+
+/**
+ * Create Appointment.
+ * @param {Object} company a company.
+ * @param {Object} student a student.
+ * @param {Array} companyOffers offers of a company.
+ * @param {Object} offer an offer.
+ * @param {Number} slot a slot.
+ */
 const createAppointment = (company, student, companyOffers, offer, slot) => {
 	companyOffers.forEach((offer) => {
 		offer.orderedStudents.splice(offer.orderedStudents.indexOf(student.id), 1);
