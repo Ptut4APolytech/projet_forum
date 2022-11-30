@@ -1,0 +1,22 @@
+# Routes Test
+$include: "hello.yaml"
+# Routes utilisateur
+$include: "user.yaml"
+# Routes entreprise
+$include: "company.yaml"
+# Routes offres
+$include: "offer.yaml"
+# Routes représentant d'entreprise
+$include: "representative.yaml"
+# Routes étudiant
+$include: "student.yaml"
+# Routes admin
+$include: "admin.yaml"
+# Routes RDV
+$include: "appointment.yaml"
+# Routes d'authentification
+$include: "authentification.yaml"
+# Routes de gestion de fichiers
+$include: "storage.yaml"
+# Routes de configuration générale
+$include: "configuration.yaml"

@@ -1,0 +1,198 @@
+/student:
+  get:
+    tags:
+      - "Student"
+    summary: "Liste des étudiants"
+    description: "Cette requête retourne la liste complète des étudiants"
+    operationId: "getStudents"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des étudiants"
+        schema:
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Student"
+  post:
+    tags:
+      - "Student"
+    summary: "Création d'un étudiant"
+    description: "Cette requête crée un étudiant"
+    operationId: "addStudent"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Etudiant à créer"
+        required: true
+        schema:
+          type: "object"
+          required:
+            - "email"
+            - "firstname"
+            - "lastname"
+            - "isRemote"
+          properties:
+            email:
+              type: "string"
+              description: "Email utilisé pour l'entité utilisateur"
+              pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$
+            firstname:
+              type: "string"
+              description: "Prénom de l’utilisateur lié"
+            lastname:
+              type: "string"
+              description: "Nom de l’utilisateur lié"
+            description:
+              type: "string"
+              description: "La description de l’étudiant"
+            isRemote:
+              type: "boolean"
+              description: "Définit si l’étudiant est en distanciel"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Etudiant créé avec succès"
+        schema:
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Student"
+/student/{studentId}:
+  get:
+    tags:
+      - "Student"
+    summary: "Informations sur un étudiant"
+    description: "Cette requête retourne l'étudiant lié à l'identifiant fourni"
+    operationId: "getStudent"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "studentId"
+        type: "string"
+        description: "Identifiant de l'étudiant"
+        required: true
+    responses:
+      "200":
+        description: "Informations sur l'étudiant"
+        schema:
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Student"
+  delete:
+    tags:
+      - "Student"
+    summary: "Suppression d'un étudiant"
+    description: "Cette requête supprime le étudiant lié à l'identifiant donné"
+    operationId: "delStudent"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "studentId"
+        type: "string"
+        description: "Identifiant de l'étudiant"
+        required: true
+    responses:
+      "200":
+        description: "Etudiant supprimé avec succès"
+        schema:
+          type: "object"
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Student"
+  put:
+    tags:
+      - "Student"
+    summary: "Modification d'un étudiant"
+    description: "Cette requête modifie l'étudiant lié à l'identifiant donné"
+    operationId: "setStudent"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "studentId"
+        type: "string"
+        description: "Identifiant de l'étudiant"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Données à modifier"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Etudiant modifié avec succès"
+        schema:
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Student"
+/student/search:
+  post:
+    tags:
+      - "Student"
+    summary: "Recherche globale d'étudiant"
+    description: "Cette requête effectue une recherche avec des conditions globales sur les étudiants"
+    operationId: "searchStudent"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Conditions de recherche"
+        schema:
+          type: "object"
+          required:
+            - "search"
+          properties:
+            search:
+              type: "array"
+              description: "Recherche sous la forme [{'path':'p','value':'v','operator':'='}]"
+              items:
+                type: "object"
+                required:
+                  - "path"
+                  - "value"
+                  - "operator"
+                properties:
+                  path:
+                    type: "string"
+                    description: "Attribut à filtrer"
+                  value:
+                    description: "Valeur de l'attribut"
+                  operator:
+                    type: "string"
+                    description: "Opérateur de comparaison"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste d'étudiant"
+        schema:
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Student"

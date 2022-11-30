@@ -1,0 +1,145 @@
+ApiResponse:
+    type: "object"
+    properties:
+      success:
+        type: "boolean"
+        description: "Le booléen définissant le succès de la réponse API"
+User:
+  type: "object"
+  properties:
+    email:
+      type: "string"
+      description: "Email de l’utilisateur"
+    password:
+      type: "string"
+      description: "Mot de passe de l'utilisateur"
+    role:
+      type: "string"
+      description: "Rôle de l’utilisateur"
+      enum:
+        - "admin"
+        - "representative"
+        - "student"
+    firstname:
+      type: "string"
+      description: "Prénom de l'utilisateur"
+    lastname:
+      type: "string"
+      description: "Nom de l'utilisateur"
+    token:
+      type: "string"
+      description: "Token d'authentification utilisateur"
+    avatarPath:
+      type: "string"
+      description: "Le chemin vers l’image de profil"
+    lastLogin:
+      type: "string"
+      description: "Date de dernière connexion"
+Representative:
+  type: "object"
+  properties:
+    userId:
+      type: "string"
+      description: "Identifiant de l’utilisateur lié"
+    companyId:
+      type: "string"
+      description: "Identifiant de l’entreprise"
+Student:
+  type: "object"
+  properties:
+    userId:
+      type: "string"
+      description: "Identifiant de l’utilisateur lié"
+    firstname:
+      type: "string"
+      description: "Prénom de l’utilisateur lié"
+    lastname:
+      type: "string"
+      description: "Nom de l’utilisateur lié"
+    description:
+      type: "string"
+      description: "La description de l’étudiant"
+    cvPath:
+      type: "string"
+      description: "Le chemin vers le CV dans le serveur"
+    tags:
+      type: "array"
+      description: "La liste des mots-clés pour identifier les compétences de l’étudiant"
+      items:
+        type: "string"
+    isRemote:
+      type: "boolean"
+      description: "Définit si l’étudiant est en distanciel"
+    orderedOffers:
+      type: "array"
+      description: "Liste ordonnées des identifiants des offres auquel l'étudiant a postulé"
+      items:
+        type: "string"
+    status:
+      type: "string"
+      description: "Statut de l’étudiant"
+      enum:
+        - "waiting"
+        - "validated"
+        - "notValidated"
+Company:
+  type: "object"
+  properties:
+    name:
+      type: "string"
+      description: "Nom de l’entreprise"
+    isValidated:
+      type: "boolean"
+      description: "Le statut de validation de l'entreprise"
+Offer:
+  type: "object"
+  properties:
+    companyId:
+      type: "string"
+      description: "Identifiant de l’entreprise liée"
+    title:
+      type: "string"
+      description: "Titre de l’offre"
+    content:
+      type: "string"
+      description: "Contenu de l’offre"
+    files:
+      type: "array"
+      description: "Fichiers de l'offre"
+      items:
+        type: "string"
+    tags:
+      type: "array"
+      description: "Liste des mots-clés de l'offre"
+      items:
+        type: "string"
+    status:
+      type: "string"
+      description: "Statut de l’offre"
+      enum:
+        - "waiting"
+        - "validated"
+        - "notValidated"
+    nbAppointmentsAvailable:
+      type: "integer"
+      description: "Nombre de RDV max sur l'offre"
+    orderedStudents:
+      type: "array"
+      description: "Liste ordonnée des identifiants étudiants liés à l'offre"
+      items:
+        type: "string"
+Appointment:
+  type: "object"
+  properties:
+    companyId:
+      type: "string"
+      description: "Identifiant de l'entreprise"
+    studentId:
+      type: "string"
+      description: "Identifiant de l'étudiant"
+    offerId:
+      type: "string"
+      description: "Identifiant de l'offre"
+    slot:
+      type: "integer"
+      description: "Créneau de l'offre"

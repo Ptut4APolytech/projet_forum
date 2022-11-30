@@ -1,0 +1,222 @@
+/user:
+  get:
+    tags:
+      - "User"
+    summary: "Liste des utilisateurs"
+    description: "Cette requête retourne la liste complète des utilisateurs"
+    operationId: "getUsers"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des utilisateur"
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"
+  post:
+    tags:
+      - "User"
+    summary: "Création utilisateur"
+    description: "Cette requête crée un utilisateur"
+    operationId: "addUser"
+    parameters:
+      - in: "body"
+        name: "user"
+        description: "L'utilisateur à créer"
+        schema:
+          type: "object"
+          required:
+            - "email"
+            - "password"
+            - "role"
+            - "firstname"
+            - "lastname"
+          properties:
+            email:
+              type: "string"
+              description: "Email utilisateur"
+              pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$
+            password:
+              type: "string"
+              description: "Mot de passe utilisateur"
+            role:
+              type: "string"
+              enum:
+                - "admin"
+                - "representative"
+                - "student"
+            firstname:
+              type: "string"
+              description: "Prénom de l'utilisateur"
+            lastname:
+              type: "string"
+              description: "Nom de l'utilisateur"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Utilisateur créé avec succès"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"
+/user/{userId}:
+  get:
+    tags:
+      - "User"
+    summary: "Informations utilisateur"
+    description: "Cette requête retourne un utilisateur selon l'identifiant fourni"
+    operationId: "getUser"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "userId"
+        type: "string"
+        description: "Identifiant utilisateur"
+        required: true
+    responses:
+      "200":
+        description: "Utilisateur trouvé"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"
+  delete:
+    tags:
+      - "User"
+    summary: "Suppression utilisateur"
+    description: "Suppression d'un utilisateur selon son identifiant"
+    operationId: "delUser"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "userId"
+        type: "string"
+        description: "Identifiant utilisateur"
+        required: true
+    responses:
+      "200":
+        description: "Utilisateur supprimé avec succès"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"
+  put:
+    tags:
+      - "User"
+    summary: "Modification d'un utilisateur"
+    description: "Cette requête modifie l'utilisateur lié à l'identifiant donné"
+    operationId: "setUser"
+    produces:
+      - "application/json"
+    parameters:
+      - in: path
+        name: "userId"
+        type: "string"
+        description: "identifiant utilisateur"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Données à modifier"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Utilisateur modifié avec succès"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"
+/reset:
+  post:
+    tags:
+      - "User"
+    summary: "Réinitialisation de mot de passe"
+    description: "Cette requête réinitialise le mot de passe d'un utilisateur"
+    operationId: "resetPassword"
+    security: []
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "L'email de l'utilisateur"
+        schema:
+          type: "object"
+          required:
+            - "email"
+          properties:
+            email:
+              type: "string"
+              description: "Email utilisateur"
+              pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$
+    responses:
+      "200":
+        description: "Mot de passe réinitialisé !"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Email inexistant"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"
+/reset/{token}:
+  post:
+    tags:
+      - "User"
+    summary: "Changement de mot de passe"
+    description: "Cette requête change le mot de passe d'un utilisateur après réinitialisation"
+    operationId: "updatePasswordByToken"
+    security: []
+    parameters:
+      - in: "path"
+        name: "token"
+        type: "string"
+        description: "Token de réinitialisation"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Le nouveau mot de passe de l'utilisateur"
+        schema:
+          type: "object"
+          required:
+            - "password"
+          properties:
+            password:
+              type: "string"
+              description: "Mot de passe utilisateur"
+    responses:
+      "200":
+        description: "Mot de passe réinitialisé !"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Authentification invalide"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "User"

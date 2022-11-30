@@ -1,0 +1,147 @@
+/representative:
+  get:
+    tags:
+      - "Representative"
+    summary: "Liste des représentants"
+    description: "Cette requête retourne la liste des représentants de toutes les entreprises"
+    operationId: "getRepresentatives"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des représentants"
+        schema:
+          $ref: "#/definitions/Representative"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Representative"
+  post:
+    tags:
+      - "Representative"
+    summary: "Création d'un représentant"
+    description: "Cette requête crée un représentant d'entreprise"
+    operationId: "addRepresentative"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Représentant à créer"
+        schema:
+          type: "object"
+          required:
+            - "email"
+            - "firstname"
+            - "lastname"
+            - "companyId"
+          properties:
+            email:
+              type: "string"
+              description: "Email utilisé pour l'entité utilisateur"
+              pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$
+            firstname:
+              type: "string"
+              description: "Prénom du représentant"
+            lastname:
+              type: "string"
+              description: "Nom du représentant"
+            companyId:
+              type: "string"
+              description: "Identifiant de l’entreprise"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Représentant créé"
+        schema:
+          $ref: "#/definitions/Representative"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Representative"
+/representative/{representativeId}:
+  get:
+    tags:
+      - "Representative"
+    summary: "Informations sur un représentant"
+    description: "Cette requête retourne un représentant d'entreprise selon l'identifiant donné"
+    operationId: "getRepresentative"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "representativeId"
+        type: "string"
+        description: "identifiant du représentant"
+        required: true
+    responses:
+      "200":
+        description: "Informations sur le représentant"
+        schema:
+          $ref: "#/definitions/Representative"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Representative"
+  delete:
+    tags:
+      - "Representative"
+    summary: "Suppression d'un représentant"
+    description: "Cette requête supprime le représentant lié à l'identifiant donné"
+    operationId: "delRepresentative"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "representativeId"
+        type: "string"
+        description: "Identifiant du représentant"
+        required: true
+    responses:
+      "200":
+        description: "Représentant supprimé avec succès"
+        schema:
+          $ref: "#/definitions/Representative"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Representative"
+  put:
+    tags:
+      - "Representative"
+    summary: "Modification d'un représentant"
+    description: "Cette requête modifie le représentant lié à l'identifiant donné"
+    operationId: "setRepresentative"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "representativeId"
+        type: "string"
+        description: "Identifiant du représentant"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Données à modifier"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Représentant modifié avec succès"
+        schema:
+          $ref: "#/definitions/Representative"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Representative"

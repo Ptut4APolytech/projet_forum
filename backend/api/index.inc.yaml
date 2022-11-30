@@ -1,0 +1,1602 @@
+## --------------------
+## DON'T EDIT THIS FILE
+## --------------------
+## Engine: yamlinc@0.1.10
+## Source: index.yaml
+
+swagger: '2.0'
+info:
+  title: API PTUT
+  description: Cette API a pour but de gérer l'ensemble des requêtes du projet PTUT
+  version: 1.0.0
+basePath: /v1
+tags:
+  - name: Api
+    description: Les requêtes vérifiant le bon fonctionnement de l'API
+  - name: User
+    description: Les requêtes permettant la gestion des utilisateurs
+  - name: Representative
+    description: Les requêtes permettant la gestion des représentants
+  - name: Student
+    description: Les requêtes permettant la gestion des étudiants
+  - name: Company
+    description: Les requêtes permettant la gestion des entreprises
+  - name: Admin
+    description: Les requêtes permettant la gestion des admins
+  - name: Offer
+    description: Les requêtes permettant la gestion des offres
+  - name: Appointment
+    description: Les requêtes permettant la gestion des rendez-vous
+  - name: Login
+    description: Les requêtes permettant la connexion
+  - name: Storage
+    description: Les requêtes de gestion de fichiers
+schemes:
+  - https
+  - http
+security:
+  - ApiKeyAuth: []
+paths:
+  /hello:
+    get:
+      tags:
+        - Api
+      summary: Requête de statut de l'API
+      description: Vérifie le bon fonctionnement de l'API
+      operationId: hello
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: API fonctionnelle
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid status value
+      x-swagger-router-controller: Test
+  /user:
+    get:
+      tags:
+        - User
+      summary: Liste des utilisateurs
+      description: Cette requête retourne la liste complète des utilisateurs
+      operationId: getUsers
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des utilisateur
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+    post:
+      tags:
+        - User
+      summary: Création utilisateur
+      description: Cette requête crée un utilisateur
+      operationId: addUser
+      parameters:
+        - in: body
+          name: user
+          description: L'utilisateur à créer
+          schema:
+            type: object
+            required:
+              - email
+              - password
+              - role
+              - firstname
+              - lastname
+            properties:
+              email:
+                type: string
+                description: Email utilisateur
+                pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$'
+              password:
+                type: string
+                description: Mot de passe utilisateur
+              role:
+                type: string
+                enum:
+                  - admin
+                  - representative
+                  - student
+              firstname:
+                type: string
+                description: Prénom de l'utilisateur
+              lastname:
+                type: string
+                description: Nom de l'utilisateur
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Utilisateur créé avec succès
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+  '/user/{userId}':
+    get:
+      tags:
+        - User
+      summary: Informations utilisateur
+      description: Cette requête retourne un utilisateur selon l'identifiant fourni
+      operationId: getUser
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: string
+          description: Identifiant utilisateur
+          required: true
+      responses:
+        '200':
+          description: Utilisateur trouvé
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+    delete:
+      tags:
+        - User
+      summary: Suppression utilisateur
+      description: Suppression d'un utilisateur selon son identifiant
+      operationId: delUser
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: string
+          description: Identifiant utilisateur
+          required: true
+      responses:
+        '200':
+          description: Utilisateur supprimé avec succès
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+    put:
+      tags:
+        - User
+      summary: Modification d'un utilisateur
+      description: Cette requête modifie l'utilisateur lié à l'identifiant donné
+      operationId: setUser
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: string
+          description: identifiant utilisateur
+          required: true
+        - in: body
+          name: body
+          description: Données à modifier
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Utilisateur modifié avec succès
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+  /reset:
+    post:
+      tags:
+        - User
+      summary: Réinitialisation de mot de passe
+      description: Cette requête réinitialise le mot de passe d'un utilisateur
+      operationId: resetPassword
+      security: []
+      parameters:
+        - in: body
+          name: body
+          description: L'email de l'utilisateur
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                description: Email utilisateur
+                pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$'
+      responses:
+        '200':
+          description: Mot de passe réinitialisé !
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Email inexistant
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+  '/reset/{token}':
+    post:
+      tags:
+        - User
+      summary: Changement de mot de passe
+      description: >-
+        Cette requête change le mot de passe d'un utilisateur après
+        réinitialisation
+      operationId: updatePasswordByToken
+      security: []
+      parameters:
+        - in: path
+          name: token
+          type: string
+          description: Token de réinitialisation
+          required: true
+        - in: body
+          name: body
+          description: Le nouveau mot de passe de l'utilisateur
+          schema:
+            type: object
+            required:
+              - password
+            properties:
+              password:
+                type: string
+                description: Mot de passe utilisateur
+      responses:
+        '200':
+          description: Mot de passe réinitialisé !
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Authentification invalide
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: User
+  /company:
+    get:
+      tags:
+        - Company
+      summary: Liste des entreprises
+      description: Cette requête retourne la liste des entreprises
+      operationId: getCompanies
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste retournée avec succès
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Company'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Company
+    post:
+      tags:
+        - Company
+      summary: Création d'une entreprise
+      description: Cette requête crée une entreprise
+      operationId: addCompany
+      parameters:
+        - in: body
+          name: body
+          description: L'entreprise à créer
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: Nom de l'entreprise
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Entreprise créée avec succès
+          schema:
+            $ref: '#/definitions/Company'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Company
+  '/company/{companyId}':
+    get:
+      tags:
+        - Company
+      summary: Informations entreprise
+      description: Cette requête retourne une entreprise selon son identifiant
+      operationId: getCompany
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          description: Identifiant de l'entreprise
+          required: true
+      responses:
+        '200':
+          description: Informations sur une entreprise
+          schema:
+            $ref: '#/definitions/Company'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Company
+    delete:
+      tags:
+        - Company
+      summary: Suppression entreprise
+      description: Cette requête supprime l'entreprise selon l'identifiant donné
+      operationId: delCompany
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          description: Identifiant de l'entreprise
+          required: true
+      responses:
+        '200':
+          description: Entreprise supprimée avec succès
+          schema:
+            $ref: '#/definitions/Company'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Company
+    put:
+      tags:
+        - Company
+      summary: Modification entreprise
+      description: Cette requête modifie l'entreprise selon l'identifiant donné
+      operationId: setCompany
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          description: Identifiant de l'entreprise
+          required: true
+        - in: body
+          name: body
+          description: Données à modifier sur l'entreprise
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Entreprise modifiée avec succès
+          schema:
+            $ref: '#/definitions/Company'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Company
+  /offer:
+    get:
+      tags:
+        - Offer
+      summary: Liste des offres
+      description: Cette requête retourne la liste des offres
+      operationId: getOffers
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des offres
+          schema:
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+    post:
+      tags:
+        - Offer
+      summary: Création d'une offre
+      description: Cette requête crée une offre
+      operationId: addOffer
+      parameters:
+        - in: body
+          name: body
+          description: Offre à créer
+          schema:
+            type: object
+            required:
+              - companyId
+              - title
+            properties:
+              companyId:
+                type: string
+                description: Identifiant de l'entreprise liée
+              title:
+                type: string
+                description: Titre de l'offre
+              content:
+                type: string
+                description: Contenu de l'offre
+              tags:
+                type: array
+                description: Liste des mots-clés de l'offre
+                items:
+                  type: string
+              nbAppointmentsAvailable:
+                type: integer
+                description: Nombre de RDV max sur l'offre
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Offre créée avec succès
+          schema:
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+  '/offer/{offerId}':
+    get:
+      tags:
+        - Offer
+      summary: Informations sur une offre
+      description: Cette requête retourne l'offre selon l'identifiant fourni
+      operationId: getOffer
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: offerId
+          type: string
+          description: Identifiant de l'offre
+          required: true
+      responses:
+        '200':
+          description: Informations sur l'offre
+          schema:
+            type: object
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+    delete:
+      tags:
+        - Offer
+      summary: Suppression d'une offre
+      description: Cette requête supprime l'offre liée à l'identifiant donné
+      operationId: delOffer
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: offerId
+          type: string
+          description: Identifiant de l'offre
+          required: true
+      responses:
+        '200':
+          description: Offre supprimée
+          schema:
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+    put:
+      tags:
+        - Offer
+      summary: Modification d'une offre
+      description: Cette requête modifie l'offre liée à l'identifiant donné
+      operationId: setOffer
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: offerId
+          type: string
+          description: Identifiant de l'offre
+          required: true
+        - in: body
+          name: body
+          description: Données à modifier
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Offre modifiée
+          schema:
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+  '/offer/{offerId}/offerStudents':
+    get:
+      tags:
+        - Offer
+      summary: Liste des étudiants d'une offre
+      description: >-
+        Cette requête retourne la liste des étudiants choisis pour une offre par
+        une entreprise
+      operationId: offerStudents
+      parameters:
+        - in: path
+          name: offerId
+          type: string
+          description: Identifiant de l'offre
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste d'étudiants
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+  /offer/search:
+    post:
+      tags:
+        - Offer
+      summary: Recherche globale d'offres
+      description: >-
+        Cette requête effectue une recherche avec des conditions globales sur
+        des offres
+      operationId: searchOffers
+      parameters:
+        - in: body
+          name: body
+          description: Conditions de recherche
+          schema:
+            type: object
+            required:
+              - search
+            properties:
+              search:
+                type: array
+                description: >-
+                  Recherche sous la forme
+                  [{'path':'p','value':'v','operator':'='}]
+                items:
+                  type: object
+                  required:
+                    - path
+                    - value
+                    - operator
+                  properties:
+                    path:
+                      type: string
+                      description: Attribut à filtrer
+                    value:
+                      description: Valeur de l'attribut
+                    operator:
+                      type: string
+                      description: Opérateur de comparaison
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste d'offres
+          schema:
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+  '/offer/companyOffer/{companyId}':
+    get:
+      tags:
+        - Offer
+      summary: Recherche des offres par entreprise
+      description: Cette requête retourne la liste des offres d'une entreprise
+      operationId: companyOffer
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          description: Identifiant de l'entreprise
+          required: true
+        - in: query
+          name: status
+          type: string
+          description: Le statut recherché
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste d'offres
+          schema:
+            $ref: '#/definitions/Offer'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Offer
+  /representative:
+    get:
+      tags:
+        - Representative
+      summary: Liste des représentants
+      description: >-
+        Cette requête retourne la liste des représentants de toutes les
+        entreprises
+      operationId: getRepresentatives
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des représentants
+          schema:
+            $ref: '#/definitions/Representative'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Representative
+    post:
+      tags:
+        - Representative
+      summary: Création d'un représentant
+      description: Cette requête crée un représentant d'entreprise
+      operationId: addRepresentative
+      parameters:
+        - in: body
+          name: body
+          description: Représentant à créer
+          schema:
+            type: object
+            required:
+              - email
+              - firstname
+              - lastname
+              - companyId
+            properties:
+              email:
+                type: string
+                description: Email utilisé pour l'entité utilisateur
+                pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$'
+              firstname:
+                type: string
+                description: Prénom du représentant
+              lastname:
+                type: string
+                description: Nom du représentant
+              companyId:
+                type: string
+                description: Identifiant de l’entreprise
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Représentant créé
+          schema:
+            $ref: '#/definitions/Representative'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Representative
+  '/representative/{representativeId}':
+    get:
+      tags:
+        - Representative
+      summary: Informations sur un représentant
+      description: >-
+        Cette requête retourne un représentant d'entreprise selon l'identifiant
+        donné
+      operationId: getRepresentative
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: representativeId
+          type: string
+          description: identifiant du représentant
+          required: true
+      responses:
+        '200':
+          description: Informations sur le représentant
+          schema:
+            $ref: '#/definitions/Representative'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Representative
+    delete:
+      tags:
+        - Representative
+      summary: Suppression d'un représentant
+      description: Cette requête supprime le représentant lié à l'identifiant donné
+      operationId: delRepresentative
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: representativeId
+          type: string
+          description: Identifiant du représentant
+          required: true
+      responses:
+        '200':
+          description: Représentant supprimé avec succès
+          schema:
+            $ref: '#/definitions/Representative'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Representative
+    put:
+      tags:
+        - Representative
+      summary: Modification d'un représentant
+      description: Cette requête modifie le représentant lié à l'identifiant donné
+      operationId: setRepresentative
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: representativeId
+          type: string
+          description: Identifiant du représentant
+          required: true
+        - in: body
+          name: body
+          description: Données à modifier
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Représentant modifié avec succès
+          schema:
+            $ref: '#/definitions/Representative'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Representative
+  /student:
+    get:
+      tags:
+        - Student
+      summary: Liste des étudiants
+      description: Cette requête retourne la liste complète des étudiants
+      operationId: getStudents
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des étudiants
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Student
+    post:
+      tags:
+        - Student
+      summary: Création d'un étudiant
+      description: Cette requête crée un étudiant
+      operationId: addStudent
+      parameters:
+        - in: body
+          name: body
+          description: Etudiant à créer
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - firstname
+              - lastname
+              - isRemote
+            properties:
+              email:
+                type: string
+                description: Email utilisé pour l'entité utilisateur
+                pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{1,4}$'
+              firstname:
+                type: string
+                description: Prénom de l’utilisateur lié
+              lastname:
+                type: string
+                description: Nom de l’utilisateur lié
+              description:
+                type: string
+                description: La description de l’étudiant
+              isRemote:
+                type: boolean
+                description: Définit si l’étudiant est en distanciel
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Etudiant créé avec succès
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Student
+  '/student/{studentId}':
+    get:
+      tags:
+        - Student
+      summary: Informations sur un étudiant
+      description: Cette requête retourne l'étudiant lié à l'identifiant fourni
+      operationId: getStudent
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: studentId
+          type: string
+          description: Identifiant de l'étudiant
+          required: true
+      responses:
+        '200':
+          description: Informations sur l'étudiant
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Student
+    delete:
+      tags:
+        - Student
+      summary: Suppression d'un étudiant
+      description: Cette requête supprime le étudiant lié à l'identifiant donné
+      operationId: delStudent
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: studentId
+          type: string
+          description: Identifiant de l'étudiant
+          required: true
+      responses:
+        '200':
+          description: Etudiant supprimé avec succès
+          schema:
+            type: object
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Student
+    put:
+      tags:
+        - Student
+      summary: Modification d'un étudiant
+      description: Cette requête modifie l'étudiant lié à l'identifiant donné
+      operationId: setStudent
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: studentId
+          type: string
+          description: Identifiant de l'étudiant
+          required: true
+        - in: body
+          name: body
+          description: Données à modifier
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Etudiant modifié avec succès
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Student
+  /student/search:
+    post:
+      tags:
+        - Student
+      summary: Recherche globale d'étudiant
+      description: >-
+        Cette requête effectue une recherche avec des conditions globales sur
+        les étudiants
+      operationId: searchStudent
+      parameters:
+        - in: body
+          name: body
+          description: Conditions de recherche
+          schema:
+            type: object
+            required:
+              - search
+            properties:
+              search:
+                type: array
+                description: >-
+                  Recherche sous la forme
+                  [{'path':'p','value':'v','operator':'='}]
+                items:
+                  type: object
+                  required:
+                    - path
+                    - value
+                    - operator
+                  properties:
+                    path:
+                      type: string
+                      description: Attribut à filtrer
+                    value:
+                      description: Valeur de l'attribut
+                    operator:
+                      type: string
+                      description: Opérateur de comparaison
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste d'étudiant
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Student
+  /admin:
+    get:
+      tags:
+        - Admin
+      summary: Liste des admins
+      description: Cette requête retourne la liste complète des admins
+      operationId: getAdmins
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des admins
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Admin
+  /admin/sendSurvey:
+    get:
+      tags:
+        - Admin
+      summary: Liste des admins
+      description: Cette requête retourne la liste complète des admins
+      operationId: sendSurvey
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Envoie l'enquête de satisfaction aux étudiants et aux représentants
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Admin
+  /appointment:
+    get:
+      tags:
+        - Appointment
+      summary: Liste des rendez-vous
+      description: Cette requête retourne la liste des rendez-vous du forum
+      operationId: getAppointments
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des rendez-vous
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+    post:
+      tags:
+        - Appointment
+      summary: Création d'un rendez-vous
+      description: Cette requête crée un rendez-vous pour le forum
+      operationId: addAppointment
+      parameters:
+        - in: body
+          name: body
+          description: Rendez-vous à créer
+          schema:
+            type: object
+            required:
+              - companyId
+              - studentId
+              - offerId
+              - slot
+            properties:
+              companyId:
+                type: string
+                description: Identifiant de l'entreprise
+              studentId:
+                type: string
+                description: Identifiant de l'étudiant
+              offerId:
+                type: string
+                description: Identifiant de l'offre
+              slot:
+                type: integer
+                description: Créneau de l'offre
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Rendez-vous créé
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+  '/appointment/{appointmentId}':
+    get:
+      tags:
+        - Appointment
+      summary: Informations sur un rendez-vous
+      description: Cette requête retourne un rendez-vous du forum selon son identifiant
+      operationId: getAppointment
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: appointmentId
+          type: string
+          description: Identifiant du rendez-vous
+          required: true
+      responses:
+        '200':
+          description: Informations sur le rendez-vous
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+    delete:
+      tags:
+        - Appointment
+      summary: Suppression d'un rendez-vous
+      description: Cette requête supprime le rendez-vous lié à l'identifiant donné
+      operationId: delAppointment
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: appointmentId
+          type: string
+          description: Identifiant du rendez-vous
+          required: true
+      responses:
+        '200':
+          description: Rendez-vous supprimé avec succès
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+    put:
+      tags:
+        - Appointment
+      summary: Modification d'un rendez-vous
+      description: Cette requête modifie le rendez-vous lié à l'identifiant donné
+      operationId: setAppointment
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: appointmentId
+          type: string
+          description: Identifiant du rendez-vous
+          required: true
+        - in: body
+          name: body
+          description: Données à modifier
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Rendez-vous modifié avec succès
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+  /planning/generate:
+    get:
+      tags:
+        - Appointment
+      summary: Création de tous les rendez-vous
+      description: >-
+        Cette requête crée les rendez-vous et retourne la liste des rendez-vous
+        du forum
+      operationId: createPlanning
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste des rendez-vous
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+  '/appointment/studentAppointments/{studentId}':
+    get:
+      tags:
+        - Appointment
+      summary: Liste des rendez-vous d'un étudiant
+      description: >-
+        Cette requête retourne une liste de rendez-vous du forum selon
+        l'identifiant de l'étudiant
+      operationId: getStudentAppointments
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: studentId
+          type: string
+          description: Identifiant de l'étudiant
+          required: true
+      responses:
+        '200':
+          description: Liste des rendez-vous de l'étudiant
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+  '/appointment/companyAppointments/{companyId}':
+    get:
+      tags:
+        - Appointment
+      summary: Liste des rendez-vous d'une entreprise
+      description: >-
+        Cette requête retourne une liste de rendez-vous du forum selon
+        l'identifiant de l'entreprise
+      operationId: getCompanyAppointments
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          description: Identifiant de l'entreprise
+          required: true
+      responses:
+        '200':
+          description: Liste des rendez-vous de l'entreprise
+          schema:
+            $ref: '#/definitions/Appointment'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Appointment
+  /login:
+    post:
+      tags:
+        - Login
+      summary: Connexion à l'application
+      description: Cette requête permet la connexion à l'application
+      operationId: login
+      security: []
+      parameters:
+        - in: body
+          name: body
+          description: Identifiants de connexion
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                description: Email utilisateur
+              password:
+                type: string
+                description: Mot de passe
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Connexion réussie
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Login
+  /file/download:
+    post:
+      tags:
+        - Storage
+      summary: Téléchargement d'un fichier
+      description: Cette requête télécharge un fichier
+      operationId: downloadFile
+      parameters:
+        - in: body
+          name: path
+          description: Chemin du fichier à télécharger
+          schema:
+            type: object
+            required:
+              - path
+            properties:
+              path:
+                type: string
+                description: Chemin du fichier
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: Fichier téléchargé avec succès
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Storage
+  /file/upload:
+    post:
+      tags:
+        - Storage
+      summary: Téléversement d'un fichier
+      description: Cette requête téléverse un fichier
+      operationId: uploadFile
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          description: Fichier à téléverser
+          required: true
+        - in: formData
+          name: path
+          type: string
+          description: Chemin du fichier à téléverser
+          required: true
+      responses:
+        '200':
+          description: Upload effectué avec succès
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Storage
+  /file/remove:
+    post:
+      tags:
+        - Storage
+      summary: Suppression d'un fichier
+      description: Cette requête supprime un fichier
+      operationId: removeFile
+      parameters:
+        - in: body
+          name: path
+          description: Chemin du fichier à supprimer
+          schema:
+            type: object
+            required:
+              - path
+            properties:
+              path:
+                type: string
+                description: Chemin du fichier
+      responses:
+        '200':
+          description: Suppression effectuée avec succès
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Storage
+  /configuration:
+    get:
+      tags:
+        - Configuration
+      summary: Configuration générale
+      description: Cette requête retourne des informations générales sur l'application
+      operationId: getConfiguration
+      security: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Configuration trouvée
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Configuration
+    put:
+      tags:
+        - Configuration
+      summary: Modification configuration
+      description: Cette requête modifie la configuration générale de l'application
+      operationId: setConfiguration
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Données à modifier sur la configuration
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Configuration modifiée avec succès
+        '400':
+          description: Données invalides
+        '404':
+          description: Données introuvables
+        '500':
+          description: Erreur serveur
+      x-swagger-router-controller: Configuration
+definitions:
+  ApiResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: Le booléen définissant le succès de la réponse API
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+        description: Email de l’utilisateur
+      password:
+        type: string
+        description: Mot de passe de l'utilisateur
+      role:
+        type: string
+        description: Rôle de l’utilisateur
+        enum:
+          - admin
+          - representative
+          - student
+      firstname:
+        type: string
+        description: Prénom de l'utilisateur
+      lastname:
+        type: string
+        description: Nom de l'utilisateur
+      token:
+        type: string
+        description: Token d'authentification utilisateur
+      avatarPath:
+        type: string
+        description: Le chemin vers l’image de profil
+      lastLogin:
+        type: string
+        description: Date de dernière connexion
+  Representative:
+    type: object
+    properties:
+      userId:
+        type: string
+        description: Identifiant de l’utilisateur lié
+      companyId:
+        type: string
+        description: Identifiant de l’entreprise
+  Student:
+    type: object
+    properties:
+      userId:
+        type: string
+        description: Identifiant de l’utilisateur lié
+      firstname:
+        type: string
+        description: Prénom de l’utilisateur lié
+      lastname:
+        type: string
+        description: Nom de l’utilisateur lié
+      description:
+        type: string
+        description: La description de l’étudiant
+      cvPath:
+        type: string
+        description: Le chemin vers le CV dans le serveur
+      tags:
+        type: array
+        description: La liste des mots-clés pour identifier les compétences de l’étudiant
+        items:
+          type: string
+      isRemote:
+        type: boolean
+        description: Définit si l’étudiant est en distanciel
+      orderedOffers:
+        type: array
+        description: >-
+          Liste ordonnées des identifiants des offres auquel l'étudiant a
+          postulé
+        items:
+          type: string
+      status:
+        type: string
+        description: Statut de l’étudiant
+        enum:
+          - waiting
+          - validated
+          - notValidated
+  Company:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Nom de l’entreprise
+      isValidated:
+        type: boolean
+        description: Le statut de validation de l'entreprise
+  Offer:
+    type: object
+    properties:
+      companyId:
+        type: string
+        description: Identifiant de l’entreprise liée
+      title:
+        type: string
+        description: Titre de l’offre
+      content:
+        type: string
+        description: Contenu de l’offre
+      files:
+        type: array
+        description: Fichiers de l'offre
+        items:
+          type: string
+      tags:
+        type: array
+        description: Liste des mots-clés de l'offre
+        items:
+          type: string
+      status:
+        type: string
+        description: Statut de l’offre
+        enum:
+          - waiting
+          - validated
+          - notValidated
+      nbAppointmentsAvailable:
+        type: integer
+        description: Nombre de RDV max sur l'offre
+      orderedStudents:
+        type: array
+        description: Liste ordonnée des identifiants étudiants liés à l'offre
+        items:
+          type: string
+  Appointment:
+    type: object
+    properties:
+      companyId:
+        type: string
+        description: Identifiant de l'entreprise
+      studentId:
+        type: string
+        description: Identifiant de l'étudiant
+      offerId:
+        type: string
+        description: Identifiant de l'offre
+      slot:
+        type: integer
+        description: Créneau de l'offre
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-Key

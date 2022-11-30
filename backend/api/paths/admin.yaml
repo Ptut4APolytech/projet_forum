@@ -1,0 +1,38 @@
+/admin:
+  get:
+    tags:
+      - "Admin"
+    summary: "Liste des admins"
+    description: "Cette requête retourne la liste complète des admins"
+    operationId: "getAdmins"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des admins"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Admin"
+/admin/sendSurvey:
+  get:
+    tags:
+      - "Admin"
+    summary: "Liste des admins"
+    description: "Cette requête retourne la liste complète des admins"
+    operationId: "sendSurvey"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Envoie l'enquête de satisfaction aux étudiants et aux représentants"
+        schema:
+          $ref: "#/definitions/User"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Admin"

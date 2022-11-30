@@ -1,0 +1,88 @@
+/file/download:
+  post:
+    tags:
+      - "Storage"
+    summary: "Téléchargement d'un fichier"
+    description: "Cette requête télécharge un fichier"
+    operationId: "downloadFile"
+    parameters:
+      - in: "body"
+        name: "path"
+        description: "Chemin du fichier à télécharger"
+        schema:
+          type: "object"
+          required:
+            - "path"
+          properties:
+            path:
+              type: "string"
+              description: "Chemin du fichier"
+    produces:
+      - "*/*"
+    responses:
+      "200":
+        description: "Fichier téléchargé avec succès"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Storage"
+/file/upload:
+  post:
+    tags:
+      - "Storage"
+    summary: "Téléversement d'un fichier"
+    description: "Cette requête téléverse un fichier"
+    operationId: "uploadFile"
+    consumes:
+      - "multipart/form-data"
+    parameters:
+      - in: "formData"
+        name: "file"
+        type: "file"
+        description: "Fichier à téléverser"
+        required: true
+      - in: "formData"
+        name: "path"
+        type: "string"
+        description: "Chemin du fichier à téléverser"
+        required: true
+    responses:
+      "200":
+        description: "Upload effectué avec succès"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Storage"
+/file/remove:
+  post:
+    tags:
+      - "Storage"
+    summary: "Suppression d'un fichier"
+    description: "Cette requête supprime un fichier"
+    operationId: "removeFile"
+    parameters:
+      - in: "body"
+        name: "path"
+        description: "Chemin du fichier à supprimer"
+        schema:
+          type: "object"
+          required:
+            - "path"
+          properties:
+            path:
+              type: "string"
+              description: "Chemin du fichier"
+    responses:
+      "200":
+        description: "Suppression effectuée avec succès"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Storage"

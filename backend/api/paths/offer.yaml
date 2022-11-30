@@ -1,0 +1,250 @@
+/offer:
+  get:
+    tags:
+      - "Offer"
+    summary: "Liste des offres"
+    description: "Cette requête retourne la liste des offres"
+    operationId: "getOffers"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste des offres"
+        schema:
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+  post:
+    tags:
+      - "Offer"
+    summary: "Création d'une offre"
+    description: "Cette requête crée une offre"
+    operationId: "addOffer"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Offre à créer"
+        schema:
+          type: "object"
+          required:
+            - "companyId"
+            - "title"
+          properties:
+            companyId:
+              type: "string"
+              description: "Identifiant de l'entreprise liée"
+            title:
+              type: "string"
+              description: "Titre de l'offre"
+            content:
+              type: "string"
+              description: "Contenu de l'offre"
+            tags:
+              type: "array"
+              description: "Liste des mots-clés de l'offre"
+              items:
+                type: "string"
+            nbAppointmentsAvailable:
+              type: "integer"
+              description: "Nombre de RDV max sur l'offre"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Offre créée avec succès"
+        schema:
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+/offer/{offerId}:
+  get:
+    tags:
+      - "Offer"
+    summary: "Informations sur une offre"
+    description: "Cette requête retourne l'offre selon l'identifiant fourni"
+    operationId: "getOffer"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "offerId"
+        type: "string"
+        description: "Identifiant de l'offre"
+        required: true
+    responses:
+      "200":
+        description: "Informations sur l'offre"
+        schema:
+          type: "object"
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+  delete:
+    tags:
+      - "Offer"
+    summary: "Suppression d'une offre"
+    description: "Cette requête supprime l'offre liée à l'identifiant donné"
+    operationId: "delOffer"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "offerId"
+        type: "string"
+        description: "Identifiant de l'offre"
+        required: true
+    responses:
+      "200":
+        description: "Offre supprimée"
+        schema:
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+  put:
+    tags:
+      - "Offer"
+    summary: "Modification d'une offre"
+    description: "Cette requête modifie l'offre liée à l'identifiant donné"
+    operationId: "setOffer"
+    produces:
+      - "application/json"
+    parameters:
+      - in: "path"
+        name: "offerId"
+        type: "string"
+        description: "Identifiant de l'offre"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Données à modifier"
+        required: true
+        schema:
+          type: "object"
+    responses:
+      "200":
+        description: "Offre modifiée"
+        schema:
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "404":
+        description: "Données introuvables"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+/offer/{offerId}/offerStudents:
+  get:
+    tags:
+      - "Offer"
+    summary: "Liste des étudiants d'une offre"
+    description: "Cette requête retourne la liste des étudiants choisis pour une offre par une entreprise"
+    operationId: "offerStudents"
+    parameters:
+      - in: "path"
+        name: "offerId"
+        type: "string"
+        description: "Identifiant de l'offre"
+        required: true
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste d'étudiants"
+        schema:
+          $ref: "#/definitions/Student"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+/offer/search:
+  post:
+    tags:
+      - "Offer"
+    summary: "Recherche globale d'offres"
+    description: "Cette requête effectue une recherche avec des conditions globales sur des offres"
+    operationId: "searchOffers"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "Conditions de recherche"
+        schema:
+          type: "object"
+          required:
+            - "search"
+          properties:
+            search:
+              type: "array"
+              description: "Recherche sous la forme [{'path':'p','value':'v','operator':'='}]"
+              items:
+                type: "object"
+                required:
+                  - "path"
+                  - "value"
+                  - "operator"
+                properties:
+                  path:
+                    type: "string"
+                    description: "Attribut à filtrer"
+                  value:
+                    description: "Valeur de l'attribut"
+                  operator:
+                    type: "string"
+                    description: "Opérateur de comparaison"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste d'offres"
+        schema:
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"
+/offer/companyOffer/{companyId}:
+  get:
+    tags:
+      - "Offer"
+    summary: "Recherche des offres par entreprise"
+    description: "Cette requête retourne la liste des offres d'une entreprise"
+    operationId: "companyOffer"
+    parameters:
+      - in: "path"
+        name: "companyId"
+        type: "string"
+        description: "Identifiant de l'entreprise"
+        required: true
+      - in: "query"
+        name: "status"
+        type: "string"
+        description: "Le statut recherché"
+    produces:
+      - "application/json"
+    responses:
+      "200":
+        description: "Liste d'offres"
+        schema:
+          $ref: "#/definitions/Offer"
+      "400":
+        description: "Données invalides"
+      "500":
+        description: "Erreur serveur"
+    x-swagger-router-controller: "Offer"

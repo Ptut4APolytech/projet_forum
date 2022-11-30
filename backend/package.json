@@ -1,0 +1,31 @@
+{
+  "name": "api-ptut",
+  "version": "1.0.0",
+  "description": "API du projet PTUT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "connect": "^3.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "firebase": "^9.0.2",
+    "firebase-admin": "^9.11.1",
+    "js-yaml": "^3.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "nodemailer": "^6.7.1",
+    "swagger-tools": "^0.10.4",
+    "yamlinc": "^0.1.10"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}

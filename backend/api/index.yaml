@@ -1,0 +1,41 @@
+swagger: "2.0"
+info:
+  title: "API PTUT"
+  description: "Cette API a pour but de gérer l'ensemble des requêtes du projet PTUT"
+  version: "1.0.0"
+basePath: "/v1"
+tags:
+- name: "Api"
+  description: "Les requêtes vérifiant le bon fonctionnement de l'API"
+- name: "User"
+  description: "Les requêtes permettant la gestion des utilisateurs"
+- name: "Representative"
+  description: "Les requêtes permettant la gestion des représentants"
+- name: "Student"
+  description: "Les requêtes permettant la gestion des étudiants"
+- name: "Company"
+  description: "Les requêtes permettant la gestion des entreprises"
+- name: "Admin"
+  description: "Les requêtes permettant la gestion des admins"
+- name: "Offer"
+  description: "Les requêtes permettant la gestion des offres"
+- name: "Appointment"
+  description: "Les requêtes permettant la gestion des rendez-vous"
+- name: "Login"
+  description: "Les requêtes permettant la connexion"
+- name: "Storage"
+  description: "Les requêtes de gestion de fichiers"
+schemes:
+- "https"
+- "http"
+security:
+  - ApiKeyAuth: []
+paths:
+  $include: "./paths/index.yaml"
+definitions:
+  $include: "./definitions/index.yaml"
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-Key
