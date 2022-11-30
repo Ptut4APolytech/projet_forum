@@ -1,5 +1,6 @@
 'use strict';
 
+const { NB_SLOTS_BY_DAY, SLOTS } = require('../utils/constants');
 const tools = require('../utils/tools');
 const AppointmentModel = require('../models/AppointmentModel');
 const CompanyModel = require('../models/CompanyModel');
@@ -20,14 +21,14 @@ const configurationModel = new ConfigurationModel();
  */
 exports.getAppointments = async function () {
 
-  let response;
-  try {
-    response = await appointmentModel.findAll();
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+	let response;
+	try {
+		response = await appointmentModel.findAll();
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 /**
@@ -37,24 +38,24 @@ exports.getAppointments = async function () {
  */
 exports.getStudentAppointments = async function (studentId) {
 
-  let response;
-  try {
+	let response;
+	try {
 
-    const config = await configurationModel.find();
+		const config = await configurationModel.find();
 
-    // On vérifie que l'accès au planning est autorisé dans la configuration
-    if (!config.showPlanning) {
-      response = tools.respondWithCode(400, "Planning bloqué par les administrateurs")
-    }
-    else {
-      response = await appointmentModel.findAllByStudentId(studentId);
-    }
-  }
-  catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+		// On vérifie que l'accès au planning est autorisé dans la configuration
+		if (!config.showPlanning) {
+			response = tools.respondWithCode(400, "Planning bloqué par les administrateurs")
+		}
+		else {
+			response = await appointmentModel.findAllByStudentId(studentId);
+		}
+	}
+	catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 /**
@@ -63,24 +64,24 @@ exports.getStudentAppointments = async function (studentId) {
  * @returns {Promise<Object[]>}
  */
 exports.getCompanyAppointments = async function (companyId) {
-  let response;
-  try {
+	let response;
+	try {
 
-    const config = await configurationModel.find();
+		const config = await configurationModel.find();
 
-    // On vérifie que l'accès au planning est autorisé dans la configuration
-    if (!config.showPlanning) {
-      response = tools.respondWithCode(400, "Planning bloqué par les administrateurs")
-    }
-    else {
-      response = await appointmentModel.findAllByCompanyId(companyId);
-    }
-  }
-  catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+		// On vérifie que l'accès au planning est autorisé dans la configuration
+		if (!config.showPlanning) {
+			response = tools.respondWithCode(400, "Planning bloqué par les administrateurs")
+		}
+		else {
+			response = await appointmentModel.findAllByCompanyId(companyId);
+		}
+	}
+	catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 
@@ -93,22 +94,22 @@ exports.getCompanyAppointments = async function (companyId) {
  */
 exports.getAppointment = async function (appointmentId) {
 
-  let response;
-  try {
+	let response;
+	try {
 
-    const appointment = await appointmentModel.findOne(appointmentId);
+		const appointment = await appointmentModel.findOne(appointmentId);
 
-    // Vérification de l'existence du RDV
-    if (!appointment.id) {
-      response = tools.respondWithCode(404, "RDV introuvable");
-    } else {
-      response = appointment;
-    }
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+		// Vérification de l'existence du RDV
+		if (!appointment.id) {
+			response = tools.respondWithCode(404, "RDV introuvable");
+		} else {
+			response = appointment;
+		}
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 /**
@@ -120,36 +121,36 @@ exports.getAppointment = async function (appointmentId) {
  */
 exports.addAppointment = async function (appointment) {
 
-  let response;
-  try {
+	let response;
+	try {
 
-    // Vérification de l'existence de l'entreprise
-    if (!(await companyModel.findOne(appointment.companyId)).id) {
-      response = tools.respondWithCode(404, "Entreprise introuvable");
-    }
-    // Vérification de l'existence de l'étudiant
-    else if (!(await studentModel.findOne(appointment.studentId)).id) {
-      response = tools.respondWithCode(404, "Etudiant introuvable");
-    }
-    // Vérification de l'existence de l'offre
-    else if (!(await offerModel.findOne(appointment.offerId)).id) {
-      response = tools.respondWithCode(404, "Offre introuvable");
-    } else {
+		// Vérification de l'existence de l'entreprise
+		if (!(await companyModel.findOne(appointment.companyId)).id) {
+			response = tools.respondWithCode(404, "Entreprise introuvable");
+		}
+		// Vérification de l'existence de l'étudiant
+		else if (!(await studentModel.findOne(appointment.studentId)).id) {
+			response = tools.respondWithCode(404, "Etudiant introuvable");
+		}
+		// Vérification de l'existence de l'offre
+		else if (!(await offerModel.findOne(appointment.offerId)).id) {
+			response = tools.respondWithCode(404, "Offre introuvable");
+		} else {
 
-      let appointmentItem = {
-        companyId: appointment.companyId,
-        studentId: appointment.studentId,
-        offerId: appointment.offerId,
-        slot: appointment.slot
-      }
+			let appointmentItem = {
+				companyId: appointment.companyId,
+				studentId: appointment.studentId,
+				offerId: appointment.offerId,
+				slot: appointment.slot
+			}
 
-      response = await appointmentModel.create(appointmentItem);
-    }
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+			response = await appointmentModel.create(appointmentItem);
+		}
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 /**
@@ -161,21 +162,21 @@ exports.addAppointment = async function (appointment) {
  */
 exports.delAppointment = async function (appointmentId) {
 
-  let response;
-  try {
+	let response;
+	try {
 
-    const deleteSuccess = await appointmentModel.delete(appointmentId);
+		const deleteSuccess = await appointmentModel.delete(appointmentId);
 
-    if (deleteSuccess) {
-      response = { success: true };
-    } else {
-      response = tools.respondWithCode(404, "RDV introuvable");
-    }
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+		if (deleteSuccess) {
+			response = { success: true };
+		} else {
+			response = tools.respondWithCode(404, "RDV introuvable");
+		}
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 /**
@@ -188,18 +189,18 @@ exports.delAppointment = async function (appointmentId) {
  */
 exports.delAppointmentByTypeId = async function (id, type) {
 
-  let response;
-  try {
+	let response;
+	try {
 
-    let apposToDelete = await appointmentModel.findByTypeId(id, type);
-    for (let appoToDelete of apposToDelete) {
-      await appointmentModel.delete(appoToDelete.id);
-    }
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+		let apposToDelete = await appointmentModel.findByTypeId(id, type);
+		for (let appoToDelete of apposToDelete) {
+			await appointmentModel.delete(appoToDelete.id);
+		}
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 /**
  * Modification d'un RDV
@@ -211,240 +212,76 @@ exports.delAppointmentByTypeId = async function (id, type) {
  */
 exports.setAppointment = async function (appointmentId, appointment) {
 
-  let response;
-  try {
+	let response;
+	try {
 
-    const appointmentInBase = await appointmentModel.findOne(appointmentId);
+		const appointmentInBase = await appointmentModel.findOne(appointmentId);
 
-    // Vérification de l'existence de l'entreprise
-    if (!appointmentInBase.id) {
-      response = tools.respondWithCode(404, "RDV introuvable");
-    } else {
+		// Vérification de l'existence de l'entreprise
+		if (!appointmentInBase.id) {
+			response = tools.respondWithCode(404, "RDV introuvable");
+		} else {
 
-      let newDatas = {};
-      if (appointment.slot) {
-        newDatas.slot = appointment.slot;
-      }
+			let newDatas = {};
+			if (appointment.slot) {
+				newDatas.slot = appointment.slot;
+			}
 
-      response = await appointmentModel.update(appointmentId, newDatas);
-    }
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
+			response = await appointmentModel.update(appointmentId, newDatas);
+		}
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-  return response;
+	return response;
 };
 
 
 exports.createPlanning = async function () {
+	let response;
+	try {
+		await appointmentModel.deleteAll(); // reset appointments
 
-  let response;
-  try {
-    await appointmentModel.deleteAll();
-    let allAppointments = [];
-    const NBSLOTS = 8;
-    let slots = [0, 1, 2, 3, 4, 5, 6, 7];
-    let students = await studentModel.findAll();
-    students = students.filter((stu) => stu.status === 'validated');
-    let companies = await companyModel.findAll();
-    companies = companies.filter((com) => com.isValidated);
-    let offers = await offerModel.findAll();
-    offers = offers.filter((off) => off.status === 'validated');
+		// Get all
+		const STUDENTS = await studentModel.findAll();
+		const COMPANIES = await companyModel.findAll();
+		const OFFERS = await offerModel.findAll();
+		
+		// Get validated
+		const students_validated = STUDENTS.filter((stu) => stu.status === 'validated');
+		const companies_valitated = COMPANIES.filter((com) => com.isValidated);
+		const offers_validated = OFFERS.filter((off) => off.status === 'validated');
 
-    // students.forEach((stu) => {
-    //   stu.orderedOffers = shuffle(offers).map((o) => o.id).filter((o, index) => index < 8);
-    // });
-    // offers.forEach((stu) => {
-    //   stu.orderedStudents = shuffle(students).map((s) => s.id).filter((o, index) => index < 8);
-    // });
+		// Set appointments
+		students_validated.map(stu => ({...stu.appointments = []}));
+		companies_valitated.map(com => ({...com.appointments = []}));
+		offers_validated.map(off => ({...off.appointments = []}));
 
-    students.forEach((stu) => {
-      stu.appointments = [];
-    });
-    companies.forEach((com) => {
-      com.appointments = [];
-    });
-    offers.forEach((off) => {
-      off.appointments = [];
-    });
+		// Init vars
+		let allAppointments = [];
+		
+		// 1st loop : compagny AND student wants to meet
+		allAppointments = allAppointments.concat(putAppointment(students_validated, companies_valitated, offers_validated, true));
 
-    let companiesToHandle = [];
-    companies.forEach((c) => {
-      companiesToHandle.push(c);
-    });
-    companiesToHandle = shuffle(companiesToHandle);
-    let offersToHandle = [];
-    offers.forEach((o) => {
-      offersToHandle.push(o);
-    });
-    offersToHandle = shuffle(offersToHandle);
-    let i = 0;
-    let flag = false;
-    // first loop both wants to meet
-    while (!flag) {
-      if (companiesToHandle.length === 0) {
-        flag = true;
-        continue;
-      }
-      let companyToHandle = companiesToHandle[i % companiesToHandle.length];
-      if (companyToHandle.appointments.length < NBSLOTS) {
-        let currentOffers = offersToHandle.filter((o) => o.companyId === companyToHandle.id);
-        for (let currentOffer of currentOffers) {
-          let studentId = currentOffer.orderedStudents.find((stuId) => {
-            let student = students.find(s => s.id === stuId);
-            if (student) {
-              if (student.orderedOffers.includes(currentOffer.id)) {
-                let slotAvailable = slots.find((index) => {
-                  return !companyToHandle.appointments[index] && !student.appointments[index];
-                });
-                if (slotAvailable != null) {
-                  // CREATE APPOINTMENT
-                  currentOffers.forEach((currO) => {
-                    currO.orderedStudents.splice(currO.orderedStudents.indexOf(student.id), 1);
-                  });
-                  student.orderedOffers.splice(student.orderedOffers.indexOf(currentOffer.id), 1);
-                  let appointment = {
-                    studentId: student.id,
-                    offerId: currentOffer.id,
-                    slot: slotAvailable,
-                    companyId: companyToHandle.id
-                  };
-                  student.appointments[slotAvailable] = appointment;
-                  companyToHandle.appointments[slotAvailable] = appointment;
-                  currentOffer.appointments[slotAvailable] = appointment;
-                  allAppointments.push(appointment);
-                  return true;
-                }
-              }
-            }
-            return false;
-          });
-          if (!studentId) {
-            offersToHandle.splice(offersToHandle.indexOf(currentOffer), 1);
-          }
-        }
-        if (currentOffers.length === 0) {
-          companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-        }
-      } else {
-        companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-      }
-      i++;
-    }
-    // second loop only the company wants to meet
-    companiesToHandle = shuffle(companies.filter((c) => c.appointments.length < NBSLOTS));
+		// 2nd loop : only compagny wants to meet (if there is still some available slots)
+		allAppointments = allAppointments.concat(putAppointment(students_validated, companies_valitated, offers_validated, true));
 
-    offersToHandle = shuffle(offers.filter((o) => o.appointments.length < NBSLOTS));
-    i = 0;
-    flag = false;
-    while (!flag) {
-      if (companiesToHandle.length === 0) {
-        flag = true;
-        continue;
-      }
-      let companyToHandle = companiesToHandle[i % companiesToHandle.length];
-      if (companyToHandle.appointments.length < NBSLOTS) {
-        let currentOffers = offersToHandle.filter((o) => o.companyId === companyToHandle.id);
-        for (let currentOffer of currentOffers) {
-          let studentId = currentOffer.orderedStudents.find((stuId) => {
-            let student = students.find(s => s.id === stuId);
-            if (student) {
-              // if (student.orderedOffers.includes(currentOffer.id)) {
-              let slotAvailable = slots.find((index) => {
-                return !companyToHandle.appointments[index] && !student.appointments[index]
-              });
-              if (slotAvailable != null) {
-                // CREATE APPOINTMENT
-                currentOffers.forEach((currO) => {
-                  currO.orderedStudents.splice(currO.orderedStudents.indexOf(student.id), 1);
-                });
-                student.orderedOffers.splice(student.orderedOffers.indexOf(currentOffer.id), 1);
-                let appointment = {
-                  studentId: student.id,
-                  offerId: currentOffer.id,
-                  slot: slotAvailable,
-                  companyId: companyToHandle.id
-                };
-                student.appointments[slotAvailable] = appointment;
-                companyToHandle.appointments[slotAvailable] = appointment;
-                currentOffer.appointments[slotAvailable] = appointment;
-                allAppointments.push(appointment);
-                return true;
-              }
-              // }
-            }
-            return false;
-          });
-          if (!studentId) {
-            offersToHandle.splice(offersToHandle.indexOf(currentOffer), 1);
-          }
-        }
-        if (currentOffers.length === 0) {
-          companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-        }
-      } else {
-        companiesToHandle.splice(companiesToHandle.indexOf(companyToHandle), 1);
-      }
-      i++;
-    }
-    // last loop only the student wants to meet
-    let studentsToHandle = shuffle(students.filter((s) => s.appointments.length < NBSLOTS));
+		// last loop only the student wants to meet
+		allAppointments = allAppointments.concat(putAppointment(students_validated, companies_valitated, offers_validated, false));
+		
+		for (let appo of allAppointments) {
+			await appointmentModel.create(appo);
+		}
+		response = appointmentModel.findAll();
+		// pour chaque entreprise, on choisi un horaire random, on choisi le premier étudiant qui l'a choisi aussi
+		// ainsi de suite
+		// c win
+		// si plus de student l'ont choisi, on prend les premiers étudiants qui ne l'ont pas choisi
+	} catch (error) {
+		response = tools.respondWithCode(500, error);
+	}
 
-    i = 0;
-    flag = false;
-    while (!flag) {
-      if (studentsToHandle.length === 0) {
-        flag = true;
-        continue;
-      }
-      let studentToHandle = studentsToHandle[i % studentsToHandle.length];
-      if (studentToHandle.appointments.length < NBSLOTS) {
-        let offerId = studentToHandle.orderedOffers.find((offId) => {
-          let offer = offers.find(o => o.id === offId);
-          if (offer) {
-            let company = companies.find(c => c.id === offer.companyId);
-            let slotAvailable = slots.find((index) => {
-              return !studentToHandle.appointments[index] && !company.appointments[index] && !company.appointments.find((a) => a && a.studentId === studentToHandle.id);
-            });
-            if (slotAvailable != null) {
-              // CREATE APPOINTMENT
-              studentToHandle.orderedOffers.splice(studentToHandle.orderedOffers.indexOf(offer.id), 1);
-              let appointment = {
-                studentId: studentToHandle.id,
-                offerId: offer.id,
-                slot: slotAvailable,
-                companyId: company.id
-              };
-              studentToHandle.appointments[slotAvailable] = appointment;
-              company.appointments[slotAvailable] = appointment;
-              offer.appointments[slotAvailable] = appointment;
-              allAppointments.push(appointment);
-              return true;
-            }
-          }
-          return false;
-        });
-        if (!offerId) {
-          studentsToHandle.splice(studentsToHandle.indexOf(studentToHandle), 1);
-        }
-      } else {
-        studentsToHandle.splice(studentsToHandle.indexOf(studentToHandle), 1);
-      }
-      i++;
-    }
-    for (let appo of allAppointments) {
-      await appointmentModel.create(appo);
-    }
-    response = appointmentModel.findAll();
-    // pour chaque entreprise, on choisi un horaire random, on choisi le premier étudiant qui l'a choisi aussi
-    // ainsi de suite
-    // c win
-    // si plus de student l'ont choisi, on prend les premiers étudiants qui ne l'ont pas choisi
-  } catch (error) {
-    response = tools.respondWithCode(500, error);
-  }
-
-  return response;
+	return response;
 };
 
 /**
@@ -452,12 +289,145 @@ exports.createPlanning = async function () {
  * @param {Array} a items An array containing the items.
  */
 function shuffle(a) {
-  var j, x, i;
-  for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    x = a[i];
-    a[i] = a[j];
-    a[j] = x;
-  }
-  return a;
+	var j, x, i;
+	for (i = a.length - 1; i > 0; i--) {
+		j = Math.floor(Math.random() * (i + 1));
+		x = a[i];
+		a[i] = a[j];
+		a[j] = x;
+	}
+	return a;
+}
+
+/**
+ * Put Appointments.
+ * @param {Array} students_validated students already validated.
+ * @param {Array} companies_valitated companies already validated.
+ * @param {Array} offers_validated offers already validated.
+ * @param {Boolean} loopingOnCompany flag.
+ */
+const putAppointment = (students_validated, companies_valitated, offers_validated, loopingOnCompany) => {
+	// Init vars
+	let allAppointments = [];
+
+	// Shuffle
+	let companies_shuffled = shuffle(companies_valitated.filter((com) => com.appointments.length < NB_SLOTS_BY_DAY));
+	let offers_shuffled = shuffle(offers_validated.filter((off) => off.appointments.length < NB_SLOTS_BY_DAY));
+	let students_shuffled = shuffle(students_validated.filter((stu) => stu.appointments.length < NB_SLOTS_BY_DAY));
+
+
+	if (loopingOnCompany) {
+		const appointments = companyPriority(companies_shuffled, students_shuffled, offers_shuffled);
+		allAppointments = allAppointments.concat(appointments);
+	} else { // Loop on students
+		const appointments = studentPriority(companies_valitated, students_shuffled, offers_shuffled);
+		allAppointments = allAppointments.concat(appointments);
+	}
+
+	return allAppointments;
+}
+
+/**
+ * Get all appointments to add with company priority.
+ * @param {Array} companies_shuffled companies shuffled.
+ * @param {Array} students_validated students already validated.
+ * @param {Array} offers_shuffled offers shuffled.
+ */
+const companyPriority = (companies_shuffled, students_validated, offers_shuffled) => {
+	let appointmentToAdd = []
+	// Loop on companies
+	for (const company of companies_shuffled) { // loop company
+		if (company.appointments.length < NB_SLOTS_BY_DAY) { // get if company not full
+			const companyOffers = offers_shuffled.filter((o) => o.companyId === company.id);
+			for (const offer of companyOffers) { // loop on company offers
+				for (const studentId of offer.orderedStudents) { // loop ordered students
+					const student = students_validated.find(s => s.id === studentId);
+					if (student) {
+						if (student.orderedOffers.includes(offer.id)) {
+							const appointment = check_slot(company, student, companyOffers, offer)
+							if (appointment !== null) appointmentToAdd.push(appointment);
+						}
+					} else {
+						offers_shuffled.splice(offers_shuffled.indexOf(offer), 1);
+					}
+				}
+			}
+			if (companyOffers.length === 0) {
+				companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
+			}
+		} else {
+			companies_shuffled.splice(companies_shuffled.indexOf(company), 1);
+		}
+	}
+	return appointmentToAdd;
+}
+
+/**
+ * Get all appointments to add with student priority.
+ * @param {Array} companies_valitated companies already validated.
+ * @param {Array} students_shuffled students shuffled.
+ * @param {Array} offers_shuffled offers shuffled.
+ */
+const studentPriority = (companies_valitated, students_shuffled, offers_shuffled) => {
+	let appointmentToAdd = []
+	for (const student of students_shuffled) { // loop student
+		if (student.appointments.length < NB_SLOTS_BY_DAY) { // get if student not full
+			const studentOffers = offers_shuffled.filter((o) => o.orderedStudents.includes(student.id));
+			for (const offer of studentOffers) { // loop on student offers
+				const company = companies_valitated.find(c => c.id === offer.companyId);
+				if (company) { // check useless but still
+					if (company.appointments.length < NB_SLOTS_BY_DAY) {
+						const appointment = check_slot(company, student, studentOffers, offer)
+						if (appointment !== null) appointmentToAdd.push(appointment);
+					}
+				}				}
+			if (studentOffers.length === 0) {
+				students_shuffled.splice(students_shuffled.indexOf(student), 1);
+			}
+		} else {
+			students_shuffled.splice(students_shuffled.indexOf(student), 1);
+		}
+	}
+	return appointmentToAdd;
+}
+
+/**
+ * Get if we can put appointment.
+ * @param {Object} company a company.
+ * @param {Object} student a student.
+ * @param {Array} companyOffers offers of a company.
+ * @param {Object} offer an offer.
+ */
+const check_slot = (company, student, companyOffers, offer) => {
+	const common_slot = SLOTS.find(index => !company.appointments[index] && !student.appointments[index])
+	if (common_slot !== null && common_slot !== undefined) {
+		const appointment = createAppointment(company, student, companyOffers, offer, common_slot);
+		return appointment
+	}
+	return null
+}
+
+/**
+ * Create Appointment.
+ * @param {Object} company a company.
+ * @param {Object} student a student.
+ * @param {Array} companyOffers offers of a company.
+ * @param {Object} offer an offer.
+ * @param {Number} slot a slot.
+ */
+const createAppointment = (company, student, companyOffers, offer, slot) => {
+	companyOffers.forEach((offer) => {
+		offer.orderedStudents.splice(offer.orderedStudents.indexOf(student.id), 1);
+	});
+	student.orderedOffers.splice(student.orderedOffers.indexOf(offer.id), 1);
+	const appointment = {
+		studentId: student.id,
+		offerId: offer.id,
+		slot: slot,
+		companyId: company.id
+	};
+	student.appointments[slot] = appointment;
+	company.appointments[slot] = appointment;
+	offer.appointments[slot] = appointment;
+	return appointment;
 }
